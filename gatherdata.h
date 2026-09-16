@@ -41,8 +41,14 @@ private:
 
 
 signals:
-    void sendarry(float *databuf);          // 信号，用于发送数据缓冲区
-    void sendOutput_V(float output_V); // 信号，用于发送输出电压
+    void sendDataPoint(int currentRow, int totalRows,
+                       float vA, float cA,
+                       float vB, float cB,
+                       float vC, float cC,
+                       float vOut, float cOut); // 信号，实时发送单点采样值至图表
+    void sendarry(float *databuf);              // 信号，兼容旧接口
+    void sendOutput_V(float output_V);          // 信号，用于发送输出电压
+    void notifyMessage(const QString &title, const QString &message, bool isError = false); // 跨线程通知GUI提示框
 
 public slots:
     void get_gatherTime(QString g_time); // 槽函数，获取采集时间

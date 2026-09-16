@@ -115,6 +115,64 @@ void dataview::dataView_Init(QGridLayout *chartLayout)
     setupAxes(chart4, para7, para8, axisX4, axisY4);
 }
 
+void dataview::appendDataPoint(int currentRow, int totalRows,
+                               float vA, float cA,
+                               float vB, float cB,
+                               float vC, float cC,
+                               float vOut, float cOut)
+{
+    // A相: para1 (电压), para2 (电流)
+    if (para1) para1->append(currentRow, vA);
+    if (para2) para2->append(currentRow, cA);
+
+    // 直流输出: para3 (电压), para4 (电流)
+    if (para3) para3->append(currentRow, vOut);
+    if (para4) para4->append(currentRow, cOut);
+
+    // B相: para5 (电压), para6 (电流)
+    if (para5) para5->append(currentRow, vB);
+    if (para6) para6->append(currentRow, cB);
+
+    // C相: para7 (电压), para8 (电流)
+    if (para7) para7->append(currentRow, vC);
+    if (para8) para8->append(currentRow, cC);
+
+    // X轴动态自适应推进
+    int maxX = qMax(100, totalRows);
+    if (currentRow >= 90) {
+        if (axisX1) axisX1->setRange(0, maxX);
+        if (axisX2) axisX2->setRange(0, maxX);
+        if (axisX3) axisX3->setRange(0, maxX);
+        if (axisX4) axisX4->setRange(0, maxX);
+    }
+
+    // Y轴动态自适应范围，防止超量程波形被截断
+    auto autoScaleY = [](QValueAxis* axY, float val1, float val2) {
+        if (!axY) return;
+        qreal curMin = axY->min();
+        qreal curMax = axY->max();
+        qreal low = qMin(val1, val2);
+        qreal high = qMax(val1, val2);
+        bool changed = false;
+        if (low < curMin) {
+            curMin = (low < 0) ? low * 1.2 : low * 0.8;
+            changed = true;
+        }
+        if (high > curMax) {
+            curMax = (high > 0) ? high * 1.2 : high * 0.8;
+            changed = true;
+        }
+        if (changed) {
+            axY->setRange(curMin, curMax);
+        }
+    };
+
+    autoScaleY(axisY1, vA, cA);
+    autoScaleY(axisY2, vOut, cOut);
+    autoScaleY(axisY3, vB, cB);
+    autoScaleY(axisY4, vC, cC);
+}
+
 void dataview::getData(float *databuf, int datacurrent_row, int data_length)
 {
     if (!databuf) return;
@@ -145,6 +203,11 @@ void dataview::clear_para()
     databuff1.clear();
     databuff2.clear();
     databuff3.clear();
+    databuff4.clear();
+    databuff5.clear();
+    databuff6.clear();
+    databuff7.clear();
+
     if (para1) para1->clear();
     if (para2) para2->clear();
     if (para3) para3->clear();
@@ -153,4 +216,13 @@ void dataview::clear_para()
     if (para6) para6->clear();
     if (para7) para7->clear();
     if (para8) para8->clear();
+
+    auto resetAxis = [](QValueAxis* axX, QValueAxis* axY) {
+        if (axX) axX->setRange(0, 100);
+        if (axY) axY->setRange(-10, 10);
+    };
+    resetAxis(axisX1, axisY1);
+    resetAxis(axisX2, axisY2);
+    resetAxis(axisX3, axisY3);
+    resetAxis(axisX4, axisY4);
 }

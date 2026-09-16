@@ -242,9 +242,16 @@ void generator::generate_prbs4(int length, QList<int> &Prbs_list) {
 // 数据保存
 int generator::data_Save()
 {
+    // 自动确保目录存在，避免用户手动创建文件夹
+    QString dirPath = "D:/WPT/generate_data";
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
     QDateTime current_date_time = QDateTime::currentDateTime();
     QString current_date = current_date_time.toString("yyyy.MM.dd hh.mm.ss");
-    QString filename = QString("D://WPT//generate_data//%1.xlsx").arg(current_date); // 需要手动创建文件夹
+    QString filename = QString("%1/%2.xlsx").arg(dirPath, current_date);
     save_data_xlsx = new QXlsx::Document(filename);
 
     // 设定单元格格式
@@ -252,13 +259,9 @@ int generator::data_Save()
     format.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
     format.setVerticalAlignment(QXlsx::Format::AlignVCenter);
     format.setFontBold(true);
-    save_data_xlsx->setColumnWidth(1, 10, 14);
-    if (!save_data_xlsx->saveAs(filename)) {
-        QMessageBox::information(NULL, "状态", "创建文件失败");
-        return 0;
-    }
+    save_data_xlsx->setColumnWidth(1, 14, 14);
 
-    // 写入表头
+    // 写入表头（规范英文拼写 Distance）
     save_data_xlsx->write(1, 1, "Frequency", format);
     save_data_xlsx->write(1, 2, "DeadTime Value", format);
     save_data_xlsx->write(1, 3, "Phase AngleA", format);
@@ -267,9 +270,9 @@ int generator::data_Save()
     save_data_xlsx->write(1, 6, "Phase AngleD", format);
 
     save_data_xlsx->write(1, 7, "Phase_Difference", format);
-    save_data_xlsx->write(1, 8, "Y Distence", format);
-    save_data_xlsx->write(1, 9, "X Distence", format);
-    save_data_xlsx->write(1, 10, "Z Distence", format);
+    save_data_xlsx->write(1, 8, "Y Distance", format);
+    save_data_xlsx->write(1, 9, "X Distance", format);
+    save_data_xlsx->write(1, 10, "Z Distance", format);
     save_data_xlsx->write(1, 11, "Speed", format);
     save_data_xlsx->write(1, 12, "Resistance", format);
     save_data_xlsx->write(1, 13, "Noise Factor Fre", format);
@@ -304,9 +307,12 @@ int generator::data_Save()
         Prbs_list.clear();
 
         delete save_data_xlsx;
-        QMessageBox::information(NULL, "保存状态", "随机数据生成完成");
+        save_data_xlsx = nullptr;
+        QMessageBox::information(this, "保存状态", "随机数据生成完成！\n保存路径：" + filename);
     } else {
-        QMessageBox::information(NULL, "保存状态", "随机数据生成失败");
+        delete save_data_xlsx;
+        save_data_xlsx = nullptr;
+        QMessageBox::warning(this, "保存失败", "随机数据生成失败，无法保存到指定路径！");
     }
     return 0;
 }

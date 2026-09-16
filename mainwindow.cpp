@@ -150,7 +150,22 @@ mainwindow::mainwindow(QWidget *parent)
     connect(ui->stop_bt, SIGNAL(clicked()), motor_deal, SLOT(on_stop_bt_clicked()));
     connect(ui->start_bt, SIGNAL(clicked()), motor_deal, SLOT(on_start_bt_clicked()));
 
-    // 显示采集数据
+    // 实时波形绘制：直连 gather_deal 的 sendDataPoint 信号
+    connect(gather_deal, &gatherdata::sendDataPoint, dataview_deal, &dataview::appendDataPoint);
+
+    // 采集完成/异常通知（子线程通过信号槽投递到主线程UI安全弹出）
+    connect(gather_deal, &gatherdata::notifyMessage, this, [=](const QString &title, const QString &msg, bool isError){
+        if (isError) {
+            QMessageBox::warning(this, title, msg);
+        } else {
+            QMessageBox::information(this, title, msg);
+        }
+    });
+
+    // 接收采集的输出电压同步至 writedata
+    connect(gather_deal, &gatherdata::sendOutput_V, write_deal, &writedata::receive_output_V);
+
+    // 显示采集数据 (兼容旧接口)
     connect(gather_deal, &gatherdata::sendarry, this, [=](float *databuf){
         dataview_deal->getData(databuf, datacurrent_row, data_length);
     });
@@ -304,20 +319,60 @@ int mainwindow::g_time()
 // 析构函数
 mainwindow::~mainwindow()
 {
-    gatherdata_thread->quit();
-    writedata_thread->quit();
-    motorPort_->close();
-    fpgaPort_->close();
-    loadPort_->close();
+    // 1. 停止并释放定时器
+    if (timer) {
+        timer->stop();
+        delete timer;
+        timer = nullptr;
+    }
+    if (timer1) {
+        timer1->stop();
+        delete timer1;
+        timer1 = nullptr;
+    }
+
+    // 2. 优雅停止工作子线程并等待安全退出（防止Destroyed while thread is still running异常崩溃）
+    if (gatherdata_thread) {
+        gatherdata_thread->quit();
+        gatherdata_thread->wait(2000);
+    }
+    if (writedata_thread) {
+        writedata_thread->quit();
+        writedata_thread->wait(2000);
+    }
+
+    // 3. 关闭所有串口设备
+    if (motorPort_) motorPort_->close();
+    if (fpgaPort_)  fpgaPort_->close();
+    if (loadPort_)  loadPort_->close();
+
+    // 4. 彻底释放所有堆对象资源，杜绝内存泄漏
+    delete gather_deal;
+    gather_deal = nullptr;
+    delete gatherdata_thread;
+    gatherdata_thread = nullptr;
+
+    delete write_deal;
+    write_deal = nullptr;
+    delete writedata_thread;
+    writedata_thread = nullptr;
 
     delete motor_deal;
-    delete motorPort_;
-    delete fpgaPort_;
-    delete loadPort_;
+    motor_deal = nullptr;
     delete dataview_deal;
-    delete gatherdata_thread;
-    delete gather_deal;
-    delete writedata_thread;
+    dataview_deal = nullptr;
+    delete generator_deal;
+    generator_deal = nullptr;
+    delete progress;
+    progress = nullptr;
+
+    delete motorPort_;
+    motorPort_ = nullptr;
+    delete fpgaPort_;
+    fpgaPort_ = nullptr;
+    delete loadPort_;
+    loadPort_ = nullptr;
+
     delete ui;
 }
 

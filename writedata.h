@@ -36,11 +36,11 @@ public:
     void w_start(int count);
     void receive_output_V(float output_v);
 
-    QList<int> getPhaseAngleA() const { return Phase_AngleA; }
-    QList<double> getDistanceX() const { return Distance_x; }
-    QList<double> getDistanceY() const { return Distance_y; }
-    QList<double> getDistanceZ() const { return Distance_z; }
-    QList<double> getResistance() const { return Resistance; }
+    const QList<int>&    getPhaseAngleA() const { return Phase_AngleA; }
+    const QList<double>& getDistanceX()   const { return Distance_x; }
+    const QList<double>& getDistanceY()   const { return Distance_y; }
+    const QList<double>& getDistanceZ()   const { return Distance_z; }
+    const QList<double>& getResistance()  const { return Resistance; }
 
 private:
     float kp = 0;

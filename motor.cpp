@@ -22,6 +22,24 @@ motor::motor(QWidget *parent) :
     connect(ui->posSlider, &QSlider::valueChanged, [=]() {
         ui->posSlider_value->setText(QString("%1").arg(ui->posSlider->value()));
     });
+
+    // 窗口创建即初始化所有输入校验器，防止非法字符输入
+    initValidators();
+}
+
+void motor::initValidators()
+{
+    ui->homespeed->setValidator(new QDoubleValidator(0.0, 100.0, 1, this));
+    ui->homespeed_f->setValidator(new QDoubleValidator(0.0, 100.0, 1, this));
+    ui->xlength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->ylength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->zlength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->xpulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->ypulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->zpulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
+    ui->xpulseNum->setValidator(new QDoubleValidator(0.0, 56 * 44.4, 1, this));
+    ui->ypulseNum->setValidator(new QDoubleValidator(0.0, 7000, 1, this));
+    ui->zpulseNum->setValidator(new QDoubleValidator(0.0, 56 * 44.4, 1, this));
 }
 
 motor::~motor()
@@ -41,19 +59,6 @@ void motor::sendCmd(const QByteArray &cmd)
 // 电机参数及限制范围初始化
 void motor::on_userparam_Init_bt_clicked()
 {
-    // 设置输入验证器
-    ui->homespeed->setValidator(new QDoubleValidator(0.0, 100.0, 1, this));
-    ui->homespeed_f->setValidator(new QDoubleValidator(0.0, 100.0, 1, this));
-    ui->xlength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->ylength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->zlength->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->xpulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->ypulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->zpulse->setValidator(new QDoubleValidator(0.0, 300.0, 1, this));
-    ui->xpulseNum->setValidator(new QDoubleValidator(0.0, 56 * 44.4, 1, this));
-    ui->ypulseNum->setValidator(new QDoubleValidator(0.0, 7000, 1, this));
-    ui->zpulseNum->setValidator(new QDoubleValidator(0.0, 56 * 44.4, 1, this));
-
     // 发送初始化命令到电机
     serialport->send(QString("$24=250\n").toLocal8Bit()); // 回零位位置速度
     serialport->send(QString("$20=1\n").toLocal8Bit());   // 软限位打开
@@ -364,8 +369,8 @@ void motor::on_local_flag_clicked()
 void motor::local_pulse()
 {
     // 细分---3200，导程---72mm, X轴行程----550mm,1MM---44.4个脉冲 ,F--最低速度190mm/min
-    double input_xpluseNum = 0.0, distance_x, input_ypluseNum = 0.0, distance_y;
-    double input_zpluseNum = 0.0, distance_z, input_Speed;
+    double input_xpluseNum = 0.0, distance_x = 0.0, input_ypluseNum = 0.0, distance_y = 0.0;
+    double input_zpluseNum = 0.0, distance_z = 0.0, input_Speed = 0.0;
     bool flag_X = false, flag_Y = false, flag_Z = false;
     input_Speed = ui->runSpeed->text().toDouble();
     input_xpluseNum = ui->xpulseNum->text().toDouble();
@@ -400,7 +405,7 @@ void motor::local_pulse()
 // 毫米定位
 void motor::local_meter()
 {
-    double distance_x, distance_y, distance_z, input_Speed;
+    double distance_x = 0.0, distance_y = 0.0, distance_z = 0.0, input_Speed = 0.0;
     bool flag_X = false, flag_Y = false, flag_Z = false;
     input_Speed = ui->runSpeed->text().toDouble();
     distance_x = ui->xpulseNum->text().toDouble();

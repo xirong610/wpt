@@ -18,6 +18,13 @@ public:
     void getData(float *databuf, int datacurrent_row, int data_length); // 获取数据并更新图表
     void clear_para(); // 清除图表数据
 
+public slots:
+    void appendDataPoint(int currentRow, int totalRows,
+                         float vA, float cA,
+                         float vB, float cB,
+                         float vC, float cC,
+                         float vOut, float cOut); // 实时接收单点并追加到图表
+
 private:
     QChartView *chartview1 = nullptr, *chartview2 = nullptr, *chartview3 = nullptr, *chartview4 = nullptr;
     QChart *chart1 = nullptr, *chart2 = nullptr, *chart3 = nullptr, *chart4 = nullptr;

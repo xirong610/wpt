@@ -69,6 +69,7 @@ private slots:
     void on_initpos_clicked();
 
 private:
+    void initValidators();
     SerialMotor* serialport = nullptr; // 外部注入的运动控制器串口对象
     bool meterLocal_flag = false;
 };

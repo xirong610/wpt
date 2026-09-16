@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
+#include <QDir>
 #include <QElapsedTimer>
 
 gatherdata::gatherdata(QObject *parent) : QObject(parent) {
@@ -130,6 +131,14 @@ int gatherdata::working(int datacurrent_row, int data_length) {
     // 逻辑：防除零保护，若输入功率接近 0，则效率记为 0，防止输出无穷大 (Inf) 或非数字 (NaN)
     Efficiency.append((Input_P >= -0.0001 && Input_P <= 0.0001) ? 0 : Output_P / Input_P);
 
+    // 实时发送单点数据至界面图表模块与相关监听者
+    emit sendDataPoint(datacurrent_row, data_length,
+                       Input_V_A, Input_C_A,
+                       Input_V_B, Input_C_B,
+                       Input_V_C, Input_C_C,
+                       Output_V, Output_C);
+    emit sendOutput_V(Output_V);
+
     // ==========================================================
     // 8. 周期判断与数据落盘
     // ==========================================================
@@ -144,95 +153,25 @@ int gatherdata::working(int datacurrent_row, int data_length) {
     return 0; // 返回 0 代表本次处理正常完成
 }
 
-
-// int gatherdata::working(int datacurrent_row, int data_length) {
-//     QElapsedTimer mstimer;
-//     mstimer.start();
-
-//     // 初始化测量变量
-//     float Input_V_A = 0, Input_C_A = 0;
-//     float Input_V_B = 0, Input_C_B = 0;
-//     float Input_V_C = 0, Input_C_C = 0, Input_P = 0;
-//     float Output_V = 0, Output_C = 0, Output_P = 0;
-
-//     // 采样参数设置
-//     const int chanell = 7;
-//     const int sample_Fre = 51200;                                    // 采样频率5.12kHz
-//     // const int sample_Fre = 51200 / 2 ;        //修改为10倍频率
-//     const int grop_num = 16
-//         ;                                        // 指定分组数
-//     int sample_num = int(sample_Fre * (gather_timer / 1000.0  / 2) / 512) * 512; // 计算采样点数
-//     int interval = sample_num / grop_num;                         // 采样间隔(必须是通道数8的倍数)
-
-//     qDebug() << "采样频率:" << gather_timer << "采样数量：" << sample_num;
-
-//     // 执行数据采集
-//     MADContinuV12(1, 0, chanell, 1, sample_num, sample_Fre, databuf);
-//     float time = (double)mstimer.nsecsElapsed() / (double)1000000;
-
-//     // 数据处理：按组累加求平均
-//     for (int k = 1; k < grop_num; k++) {
-//         Input_V_A += databuf[k * interval + 0]; // CH1: A相电压
-//         Input_C_A += databuf[k * interval + 1]; // CH2: A相电流
-//         Input_V_B += databuf[k * interval + 2]; // CH3: B相电压
-//         Input_C_B += databuf[k * interval + 3]; // CH4: B相电流
-//         Input_V_C += databuf[k * interval + 4]; // CH5: C相电压
-//         Input_C_C += databuf[k * interval + 5]; // CH6: C相电流
-//         Output_V  += databuf[k * interval + 6]; // CH7: 输出电压
-//         Output_C  += databuf[k * interval + 7]; // CH8: 输出电流
-//     }
-
-//     // 计算平均值并校正
-//     Input_V_A = Input_V_A / (grop_num - 1) * 10;
-//     Input_C_A = Input_C_A / (grop_num - 1);
-//     Input_V_B = Input_V_B / (grop_num - 1) * 10;
-//     Input_C_B = Input_C_B / (grop_num - 1);
-//     Input_V_C = Input_V_C / (grop_num - 1) * 10;
-//     Input_C_C = Input_C_C / (grop_num - 1);
-//     Output_V  = Output_V  / (grop_num - 1) * 10;
-//     Output_C  = Output_C  / (grop_num - 1);
-
-//     // 计算功率和效率
-//     // Input_P  = Input_V_A * Input_C_A + Input_C_B * Input_V_B + Input_C_C * Input_V_C;
-//     Input_P  = Input_V_A * Input_C_A;
-//     Output_P = Output_V * Output_C;
-
-//     // 存储计算结果
-//     Input_Voltage_A.append(Input_V_A);
-//     Input_Current_A.append(Input_C_A);
-//     Input_Voltage_B.append(Input_V_B);
-//     Input_Current_B.append(Input_C_B);
-//     Input_Voltage_C.append(Input_V_C);
-//     Input_Current_C.append(Input_C_C);
-//     Output_Voltage.append(Output_V);
-//     Output_Current.append(Output_C);
-//     Input_Power.append(Input_P);
-//     Output_Power.append(Output_P);
-//     Efficiency.append(Input_P == 0 ? 0 : Output_P / Input_P);
-
-//     // 最后一组数据时保存文件
-//     if (datacurrent_row == data_length - 1) {
-//         save_need_data();
-//         save_gather_data();
-//     }
-
-
-//     qDebug() << "单次采样时间: " << time << "ms";
-//     return 0;
-// }
-
 void gatherdata::save_need_data() {
     // 检查主窗口和数据对象
     mainwindow* main_window = mainwindow::mainwindow_ptr;
     if (!main_window || !main_window->getWriteDeal()) {
-        QMessageBox::warning(NULL, "警告", "数据未加载");
+        emit notifyMessage("警告", "数据未加载", true);
         return;
+    }
+
+    // 确保存储目录存在，避免文件创建失败
+    QString dirPath = "D:/WPT/gather_data";
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
     }
 
     // 创建文件名和Excel文档
     QDateTime current_date_time = QDateTime::currentDateTime();
     QString current_date = current_date_time.toString("yyyy.MM.dd hh.mm.ss");
-    QString filename = QString("D://WPT//gather_data//combined_%1.xlsx").arg(current_date);
+    QString filename = QString("%1/combined_%2.xlsx").arg(dirPath, current_date);
     QXlsx::Document* selected_data_xlsx = new QXlsx::Document(filename);
 
     // 设置单元格格式
@@ -263,11 +202,11 @@ void gatherdata::save_need_data() {
         selected_data_xlsx->write(i + 2, 6, Output_Voltage[i], format);
     }
 
-    // 保存文件并处理结果
+    // 保存文件并通知结果
     if (!selected_data_xlsx->save()) {
-        QMessageBox::warning(NULL, "警告", "数据保存失败");
+        emit notifyMessage("警告", "合并数据保存失败", true);
     } else {
-        QMessageBox::information(NULL, "提示", "数据保存成功\n保存路径：" + filename);
+        emit notifyMessage("提示", "数据保存成功\n保存路径：" + filename, false);
     }
 
     // 清理资源
@@ -275,6 +214,8 @@ void gatherdata::save_need_data() {
 }
 
 void gatherdata::save_gather_data() {
+    if (!save_data_xlsx) return;
+
     // 写入Excel文件
     for (int i = 0; i < Input_Voltage_A.length(); i++) {
         save_data_xlsx->write(i + 2, 1,  Input_Voltage_A[i], format);
@@ -290,35 +231,49 @@ void gatherdata::save_gather_data() {
         save_data_xlsx->write(i + 2, 11, Efficiency[i],      format);
     }
 
-    // 保存并清理资源
-    if (save_data_xlsx->save()) {
-        Input_Voltage_A.clear();
-        Input_Current_A.clear();
-        Input_Voltage_B.clear();
-        Input_Current_B.clear();
-        Input_Voltage_C.clear();
-        Input_Current_C.clear();
-        Output_Voltage.clear();
-        Output_Current.clear();
-        Input_Power.clear();
-        Output_Power.clear();
-        Efficiency.clear();
+    // 保存并安全清理资源，杜绝内存泄漏
+    bool ok = save_data_xlsx->save();
+    delete save_data_xlsx;
+    save_data_xlsx = nullptr;
 
-        delete save_data_xlsx;
-        save_data_xlsx = nullptr;
-    } else {
-        QMessageBox::information(NULL, "保存状态", "数据采集失败");
+    Input_Voltage_A.clear();
+    Input_Current_A.clear();
+    Input_Voltage_B.clear();
+    Input_Current_B.clear();
+    Input_Voltage_C.clear();
+    Input_Current_C.clear();
+    Output_Voltage.clear();
+    Output_Current.clear();
+    Input_Power.clear();
+    Output_Power.clear();
+    Efficiency.clear();
+
+    if (!ok) {
+        emit notifyMessage("保存状态", "采集数据保存失败", true);
     }
 }
 
 void gatherdata::create_file(QString filename) {
+    // 确保存储目录存在
+    QString dirPath = "D:/WPT/gather_data";
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
     // 如果没有提供文件名，则创建带时间戳的文件名
     if (filename.isEmpty()) {
         QDateTime current_date_time = QDateTime::currentDateTime();
         QString current_date = current_date_time.toString("yyyy.MM.dd hh.mm.ss");
-        filename = QString("D://WPT//gather_data//%1.xlsx").arg(current_date);
+        filename = QString("%1/%2.xlsx").arg(dirPath, current_date);
     } else {
-        filename = QString("D://WPT//gather_data//%1.xlsx").arg(filename);
+        filename = QString("%1/%2.xlsx").arg(dirPath, filename);
+    }
+
+    // 如果之前已有未释放的文档实例，先释放
+    if (save_data_xlsx) {
+        delete save_data_xlsx;
+        save_data_xlsx = nullptr;
     }
 
     // 创建Excel文件并设置格式
@@ -327,8 +282,8 @@ void gatherdata::create_file(QString filename) {
     format.setVerticalAlignment(QXlsx::Format::AlignVCenter);
     format.setFontBold(true);
 
-    // 设置列宽和表头
-    save_data_xlsx->setColumnWidth(1, 8, 16);
+    // 设置列宽和规范英文表头 (Output)
+    save_data_xlsx->setColumnWidth(1, 11, 16);
     save_data_xlsx->saveAs(filename);
     save_data_xlsx->write(1, 1,  "Input Voltage A",  format);
     save_data_xlsx->write(1, 2,  "Input Current A",  format);
@@ -336,9 +291,9 @@ void gatherdata::create_file(QString filename) {
     save_data_xlsx->write(1, 4,  "Input Current B",  format);
     save_data_xlsx->write(1, 5,  "Input Voltage C",  format);
     save_data_xlsx->write(1, 6,  "Input Current C",  format);
-    save_data_xlsx->write(1, 7,  "Ouput Voltage",    format);
-    save_data_xlsx->write(1, 8,  "Ouput Current",    format);
+    save_data_xlsx->write(1, 7,  "Output Voltage",   format);
+    save_data_xlsx->write(1, 8,  "Output Current",   format);
     save_data_xlsx->write(1, 9,  "Input Power",      format);
-    save_data_xlsx->write(1, 10, "Ouput Power",      format);
+    save_data_xlsx->write(1, 10, "Output Power",     format);
     save_data_xlsx->write(1, 11, "Efficiency",       format);
 }
