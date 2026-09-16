@@ -55,6 +55,11 @@ private slots:
     void on_send_motor_bt_clicked();   // 发送电机按钮点击事件
     void on_manual_bt_clicked();
     void on_initFpgaSignal_bt_clicked(); // 初始化信号 (65kHz, 死区5%, 相位差90°)
+    void on_advancedSerial_bt_toggled(bool checked);     // 折叠/展开高级串口参数
+    void on_manualSendSignal_bt_clicked();               // 发送手动FPGA信号
+    void on_manualSendLoad_bt_clicked();                 // 发送手动负载指令
+    void updateManualSignalPreview();                    // 更新FPGA信号报文预览
+    void updateManualLoadPreview();                      // 更新负载指令预览
 
 
 signals:

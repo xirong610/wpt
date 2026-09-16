@@ -11,6 +11,23 @@
 #include "writedata.h"
 #include "debug.h"
 
+// 滚轮事件过滤器：当 QComboBox 下拉菜单未展开时拦截并忽略滚轮事件，防止用户滑动侧边栏时误触篡改波特率/串口号
+class ComboBoxWheelFilter : public QObject {
+public:
+    explicit ComboBoxWheelFilter(QObject *parent = nullptr) : QObject(parent) {}
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        if (event->type() == QEvent::Wheel) {
+            auto *cb = qobject_cast<QComboBox*>(obj);
+            if (cb && (!cb->view() || !cb->view()->isVisible())) {
+                event->ignore();
+                return true; // 拦截事件，避免修改选项
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+};
+
 // 定义全局指针，用于共享主窗口 UI 指针和主窗口指针
 mainwindow* mainwindow::mainwindow_ui = nullptr;
 mainwindow* mainwindow::mainwindow_ptr = nullptr;
@@ -140,6 +157,39 @@ mainwindow::mainwindow(QWidget *parent)
     // 启动子线程
     gatherdata_thread->start();
     writedata_thread->start();
+
+    // 默认折叠收起高级串口参数面板
+    ui->frameAdvancedSerial->setVisible(false);
+
+    // 为全界面所有下拉框安装滚轮事件过滤器，未展开时禁止滚轮滚动修改选项，防止用户滑动侧边栏时误触篡改波特率/串口号
+    auto wheelFilter = new ComboBoxWheelFilter(this);
+    const auto allComboBoxes = findChildren<QComboBox*>();
+    for (QComboBox *cb : allComboBoxes) {
+        cb->installEventFilter(wheelFilter);
+        cb->setFocusPolicy(Qt::StrongFocus);
+    }
+
+    // 绑定高级串口参数展开/收起切换
+    connect(ui->advancedSerial_bt, &QPushButton::toggled, this, &mainwindow::on_advancedSerial_bt_toggled);
+
+    // 绑定手动调试界面的参数输入联动与发送
+    connect(ui->manualSendSignal_bt, &QPushButton::clicked, this, &mainwindow::on_manualSendSignal_bt_clicked);
+    connect(ui->manualSendLoad_bt, &QPushButton::clicked, this, &mainwindow::on_manualSendLoad_bt_clicked);
+
+    connect(ui->manualFreqEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualDeadbandEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualPhaseDiffEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualAngleAEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualAngleBEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualAngleCEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+    connect(ui->manualAngleDEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualSignalPreview);
+
+    connect(ui->manualLoadValueEdit, &QLineEdit::textChanged, this, &mainwindow::updateManualLoadPreview);
+    connect(ui->manualLoadModeComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &mainwindow::updateManualLoadPreview);
+
+    // 计算初次默认预览报文
+    updateManualSignalPreview();
+    updateManualLoadPreview();
 
     // 连接信号和槽函数
 
@@ -569,13 +619,152 @@ void mainwindow::on_creatData_bt_clicked()
 
 void mainwindow::on_manual_bt_clicked()
 {
-    // 打开手动调试窗口并注入共享的串口对象（彻底消除串口重复占用冲突）
-    manual_debug* debug_Widget = new manual_debug();
-    debug_Widget->setAttribute(Qt::WA_DeleteOnClose);
-    debug_Widget->setSharedSerialPorts(fpgaPort_, loadPort_, motorPort_);
-    debug_Widget->show();
-    debug_Widget->raise();
-    debug_Widget->activateWindow();
+    // 一键切换到内置的手动调试面板选项卡（无需弹出窗口，完全整合到主界面）
+    if (ui && ui->modeTabs && ui->tabManualDebug) {
+        ui->modeTabs->setCurrentWidget(ui->tabManualDebug);
+    }
+}
+
+// 展开 / 折叠高级串口参数
+void mainwindow::on_advancedSerial_bt_toggled(bool checked)
+{
+    if (ui && ui->frameAdvancedSerial) {
+        ui->frameAdvancedSerial->setVisible(checked);
+    }
+    if (ui && ui->advancedSerial_bt) {
+        ui->advancedSerial_bt->setText(checked ? "⚙ 高级参数 ▴" : "⚙ 高级参数 ▾");
+    }
+}
+
+// 实时计算并预览 FPGA 十六进制信号报文
+void mainwindow::updateManualSignalPreview()
+{
+    if (!ui) return;
+    int freq = ui->manualFreqEdit->text().trimmed().toInt();
+    if (freq <= 0) freq = 85000;
+    int dead = ui->manualDeadbandEdit->text().trimmed().toInt();
+    if (dead < 0) dead = 5;
+    int phase = ui->manualPhaseDiffEdit->text().trimmed().toInt();
+    int a = ui->manualAngleAEdit->text().trimmed().toInt();
+    int b = ui->manualAngleBEdit->text().trimmed().toInt();
+    int c = ui->manualAngleCEdit->text().trimmed().toInt();
+    int d = ui->manualAngleDEdit->text().trimmed().toInt();
+
+    QByteArray packet = SerialFpga::buildSignalPacket(freq, dead, phase, a, b, c, d);
+    QString hexStr = packet.toHex(' ').toUpper();
+    ui->manualSignalSendComboBox->setEditText(hexStr);
+}
+
+// 发送手动配置的 FPGA 信号
+void mainwindow::on_manualSendSignal_bt_clicked()
+{
+    if (!fpgaPort_) return;
+
+    if (!fpgaPort_->isOpen()) {
+        if (fpgaPort_->openFromUI(ui->comcb1) == 0) {
+            ui->openbt1->setText("关闭");
+            serial_flag1 = 1;
+            qDebug() << "[FPGA] 自动连接串口成功:" << fpgaPort_->currentPortName();
+        } else {
+            QMessageBox::warning(this, "串口未连接", "FPGA 控制器串口未打开且无法自动连接，请检查串口选择！");
+            return;
+        }
+    }
+
+    int freq = ui->manualFreqEdit->text().trimmed().toInt();
+    if (freq <= 0) freq = 85000;
+    int dead = ui->manualDeadbandEdit->text().trimmed().toInt();
+    if (dead < 0) dead = 5;
+    int phase = ui->manualPhaseDiffEdit->text().trimmed().toInt();
+    int a = ui->manualAngleAEdit->text().trimmed().toInt();
+    int b = ui->manualAngleBEdit->text().trimmed().toInt();
+    int c = ui->manualAngleCEdit->text().trimmed().toInt();
+    int d = ui->manualAngleDEdit->text().trimmed().toInt();
+
+    QByteArray packet = SerialFpga::buildSignalPacket(freq, dead, phase, a, b, c, d);
+    packet.append(0x0D);
+    packet.append(0x0A);
+    fpgaPort_->send(packet);
+
+    QString hexStr = packet.toHex(' ').toUpper();
+    if (ui->manualSignalSendComboBox->findText(hexStr) == -1) {
+        ui->manualSignalSendComboBox->insertItem(0, hexStr);
+    }
+    ui->manualSignalSendComboBox->setCurrentText(hexStr);
+
+    QString logMsg = QString("[FPGA手动调试] 已发送信号 -> 频率:%1Hz, 死区:%2%, 相位差:%3° | 报文: %4")
+                         .arg(freq).arg(dead).arg(phase).arg(hexStr);
+    qDebug().noquote() << logMsg;
+
+    if (ui->statusBar) {
+        ui->statusBar->showMessage(QString("⚡ FPGA 信号发送成功 (%1Hz, 死区%2%, 相位%3°)").arg(freq).arg(dead).arg(phase), 4000);
+    }
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 实时更新电子负载仪 SCPI 指令预览
+void mainwindow::updateManualLoadPreview()
+{
+    if (!ui) return;
+    double val = ui->manualLoadValueEdit->text().trimmed().toDouble();
+    if (val <= 0.0) val = 50.0;
+    int modeIdx = ui->manualLoadModeComboBox->currentIndex();
+    QString cmd;
+    switch (modeIdx) {
+        case 0: cmd = QString("RESI1:CR %1").arg(val, 0, 'f', 3); break;
+        case 1: cmd = QString("CURR1:CC %1").arg(val, 0, 'f', 3); break;
+        case 2: cmd = QString("VOLT1:CV %1").arg(val, 0, 'f', 3); break;
+        case 3: cmd = QString("POW1:CP %1").arg(val, 0, 'f', 3); break;
+        default: cmd = QString("RESI1:CR %1").arg(val, 0, 'f', 3); break;
+    }
+    ui->manualLoadSendComboBox->setEditText(cmd);
+}
+
+// 发送手动配置的电子负载仪指令
+void mainwindow::on_manualSendLoad_bt_clicked()
+{
+    if (!loadPort_) return;
+
+    if (!loadPort_->isOpen()) {
+        if (loadPort_->openFromUI(ui->comcb2) == 0) {
+            ui->openbt2->setText("关闭");
+            serial_flag2 = 1;
+            qDebug() << "[负载仪] 自动连接串口成功:" << loadPort_->currentPortName();
+        } else {
+            QMessageBox::warning(this, "串口未连接", "电子负载仪串口未打开且无法自动连接，请检查串口选择！");
+            return;
+        }
+    }
+
+    QString cmd = ui->manualLoadSendComboBox->currentText().trimmed();
+    if (cmd.isEmpty()) {
+        updateManualLoadPreview();
+        cmd = ui->manualLoadSendComboBox->currentText().trimmed();
+    }
+    QString commandToSend = cmd;
+    if (!commandToSend.endsWith('\n')) {
+        commandToSend += "\n";
+    }
+
+    loadPort_->send(commandToSend.toUtf8());
+
+    QString trimmedCmd = cmd.trimmed();
+    if (ui->manualLoadSendComboBox->findText(trimmedCmd) == -1) {
+        ui->manualLoadSendComboBox->insertItem(0, trimmedCmd);
+    }
+    ui->manualLoadSendComboBox->setCurrentText(trimmedCmd);
+
+    QString logMsg = QString("[电子负载仪手动调试] 已发送指令: %1").arg(trimmedCmd);
+    qDebug().noquote() << logMsg;
+
+    if (ui->statusBar) {
+        ui->statusBar->showMessage(QString("🔋 负载指令已发送: %1").arg(trimmedCmd), 4000);
+    }
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
 }
 
 // 快捷初始化 FPGA 信号 (65000Hz, 死区5%, 相位差90°)
