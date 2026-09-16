@@ -61,6 +61,24 @@ private slots:
     void updateManualSignalPreview();                    // 更新FPGA信号报文预览
     void updateManualLoadPreview();                      // 更新负载指令预览
 
+    // 电机相对位移控制 (线圈对齐) 槽函数
+    void on_btnSetRelZero_clicked();
+    void on_btnGotoInitPos_clicked();
+    void on_btnMoveBack_clicked();
+    void on_btnMoveFront_clicked();
+    void on_btnMoveLeft_clicked();
+    void on_btnMoveRight_clicked();
+    void on_btnMoveUp_clicked();
+    void on_btnMoveDown_clicked();
+    void on_btnMotorStop_clicked();
+    void on_btnMotorUnlock_clicked();
+    void on_btnQueryStatus_clicked();
+    void on_btnSpeedPreset_clicked(int speed);
+    void on_btnStepPreset_clicked(double step);
+    void onMotorPositionUpdated(double mx, double my, double mz);
+    void onMotorStatusUpdated(const QString &state, double feed);
+    void updateRelativeDisplay();
+    bool ensureMotorPortOpen();
 
 signals:
     void serial_signals(); // 串口信号，用于更新串口状态
@@ -88,6 +106,17 @@ private:
     bool serial_flag;  // 串口状态标志
     bool serial_flag1; // FPGA控制器状态标志
     bool serial_flag2; // 负载仪状态标志
+
+    // 电机相对坐标体系 (线圈对齐2cm默认位: X207, Y273, Z301)
+    double refX_ = 207.0;
+    double refY_ = 273.0;
+    double refZ_ = 301.0;
+    double curMachineX_ = 207.0;
+    double curMachineY_ = 273.0;
+    double curMachineZ_ = 301.0;
+    bool hasReceivedMachinePos_ = false;
+    QString lastMotorState_ = "Idle";
+    double lastMotorFeed_ = 0.0;
 
     QTimer *hotplugTimer_;                 // 串口热插拔防抖定时器
     QTimer *portPollTimer_;                // 串口轮询检测兜底定时器

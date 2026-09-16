@@ -37,6 +37,23 @@ public:
     void menu_Init();
     void setTx_byte(int txByte);
 
+    // 运动控制辅助指令
+    void sendJog(double dx, double dy, double dz, int speed);
+    void sendAbsoluteMove(double x, double y, double z, int speed);
+    void sendStop();
+    void sendUnlock();
+    void queryStatus();
+    void updateStatusBarPosition(double relX, double relY, double relZ, const QString &state, double feed);
+
+    double lastMX() const { return lastMX_; }
+    double lastMY() const { return lastMY_; }
+    double lastMZ() const { return lastMZ_; }
+    bool hasValidPos() const { return hasValidPos_; }
+
+signals:
+    void positionUpdated(double mX, double mY, double mZ);
+    void statusUpdated(const QString &state, double feed);
+
 protected slots:
     void onReadyRead() override;
 
@@ -65,6 +82,13 @@ private:
     QLabel* statusbar_Zpos = nullptr;       // Z位置标签
     QLabel* statusbar_Speed = nullptr;      // 速度标签
     QLabel* statusbar_TX = nullptr;         // 发送字节数标签
+
+    // 状态查询轮询定时器与缓存坐标
+    class QTimer *pollTimer_ = nullptr;
+    double lastMX_ = 207.0;
+    double lastMY_ = 273.0;
+    double lastMZ_ = 301.0;
+    bool hasValidPos_ = false;
 };
 
 #endif // SERIAL_MOTOR_H

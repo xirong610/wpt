@@ -191,6 +191,38 @@ mainwindow::mainwindow(QWidget *parent)
     updateManualSignalPreview();
     updateManualLoadPreview();
 
+    // 绑定电机相对位移控制 (线圈对齐) 按钮与信号
+    connect(motorPort_, &SerialMotor::positionUpdated, this, &mainwindow::onMotorPositionUpdated);
+    connect(motorPort_, &SerialMotor::statusUpdated, this, &mainwindow::onMotorStatusUpdated);
+
+    connect(ui->btnSetRelZero, &QPushButton::clicked, this, &mainwindow::on_btnSetRelZero_clicked);
+    connect(ui->btnGotoInitPos, &QPushButton::clicked, this, &mainwindow::on_btnGotoInitPos_clicked);
+
+    connect(ui->btnMoveBack, &QPushButton::clicked, this, &mainwindow::on_btnMoveBack_clicked);
+    connect(ui->btnMoveFront, &QPushButton::clicked, this, &mainwindow::on_btnMoveFront_clicked);
+    connect(ui->btnMoveLeft, &QPushButton::clicked, this, &mainwindow::on_btnMoveLeft_clicked);
+    connect(ui->btnMoveRight, &QPushButton::clicked, this, &mainwindow::on_btnMoveRight_clicked);
+    connect(ui->btnMoveUp, &QPushButton::clicked, this, &mainwindow::on_btnMoveUp_clicked);
+    connect(ui->btnMoveDown, &QPushButton::clicked, this, &mainwindow::on_btnMoveDown_clicked);
+
+    connect(ui->btnMotorStop, &QPushButton::clicked, this, &mainwindow::on_btnMotorStop_clicked);
+    connect(ui->btnMotorUnlock, &QPushButton::clicked, this, &mainwindow::on_btnMotorUnlock_clicked);
+    connect(ui->btnQueryStatus, &QPushButton::clicked, this, &mainwindow::on_btnQueryStatus_clicked);
+
+    connect(ui->btnSpeedSlow, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(300); });
+    connect(ui->btnSpeedStd, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(1000); });
+    connect(ui->btnSpeedFast, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(2500); });
+
+    connect(ui->btnStep05, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(0.5); });
+    connect(ui->btnStep1, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(1.0); });
+    connect(ui->btnStep2, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(2.0); });
+    connect(ui->btnStep5, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(5.0); });
+    connect(ui->btnStep10, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(10.0); });
+    connect(ui->btnStep20, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(20.0); });
+
+    // 初始化相对坐标显示为对齐2cm默认零点
+    updateRelativeDisplay();
+
     // 连接信号和槽函数
 
     // 刷新串口（支持硬件热插拔与手动按钮）
@@ -304,6 +336,13 @@ mainwindow::mainwindow(QWidget *parent)
         if (home_flag) {
             motor_deal->initPos();
             home_flag = 0;
+            refX_ = 207.0;
+            refY_ = 273.0;
+            refZ_ = 301.0;
+            curMachineX_ = 207.0;
+            curMachineY_ = 273.0;
+            curMachineZ_ = 301.0;
+            updateRelativeDisplay();
         } else {
             QMessageBox::warning(NULL, "提示", "未回零位");
         }
@@ -860,3 +899,310 @@ void mainwindow::on_send_motor_bt_clicked()
 {
     motorPort_->send(ui->send_motor_edit->toPlainText().toLocal8Bit() + '\n');
 }
+
+// 确保运动控制器串口打开
+bool mainwindow::ensureMotorPortOpen()
+{
+    if (motorPort_ && motorPort_->isOpen()) return true;
+
+    if (motorPort_ && motorPort_->openFromUI() == 0) {
+        ui->openbt->setText("关闭");
+        serial_flag = 1;
+        motorPort_->statusBar_connected();
+        return true;
+    }
+
+    QMessageBox::warning(this, "运动串口未连接", "运动控制器串口未连接，请先在【硬件连接】中连接电机串口！");
+    return false;
+}
+
+// 设定当前位置为相对零点
+void mainwindow::on_btnSetRelZero_clicked()
+{
+    refX_ = curMachineX_;
+    refY_ = curMachineY_;
+    refZ_ = curMachineZ_;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[相对零点] 已将当前位置设为相对零点基准 (X=%1, Y=%2, Z=%3)")
+                        .arg(refX_, 0, 'f', 2).arg(refY_, 0, 'f', 2).arg(refZ_, 0, 'f', 2);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage("🎯 当前位置已设定为相对坐标零点 (0, 0, 0)", 3500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 回到对齐2cm初始位
+void mainwindow::on_btnGotoInitPos_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    int speed = ui->spinMotorSpeed->value();
+    // 2cm 线圈对齐初始绝对位置 X=207, Y=273, Z=301
+    motorPort_->sendAbsoluteMove(207.0, 273.0, 301.0, speed);
+    refX_ = 207.0;
+    refY_ = 273.0;
+    refZ_ = 301.0;
+    curMachineX_ = 207.0;
+    curMachineY_ = 273.0;
+    curMachineZ_ = 301.0;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[初始位置] 正在返回线圈对齐2cm初始位 (X=207, Y=273, Z=301, 速度=%1 mm/min)").arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage("🏠 正在回初始位 (线圈对齐2cm)...", 4000);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 往后走 (增大间距, Y+)
+void mainwindow::on_btnMoveBack_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+    double sign = ui->chkInvertY->isChecked() ? -1.0 : 1.0;
+    double dy = sign * step;
+
+    motorPort_->sendJog(0, dy, 0, speed);
+    curMachineY_ += dy;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 往后走: 单步 %1 mm (Y轴位移 %2 mm, 速度 %3 mm/min)")
+                        .arg(step, 0, 'f', 1).arg(dy, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("▲ 电机往后位移 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 往前走 (缩小间距, Y-)
+void mainwindow::on_btnMoveFront_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+    double sign = ui->chkInvertY->isChecked() ? 1.0 : -1.0;
+    double dy = sign * step;
+
+    motorPort_->sendJog(0, dy, 0, speed);
+    curMachineY_ += dy;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 往前走: 单步 %1 mm (Y轴位移 %2 mm, 速度 %3 mm/min)")
+                        .arg(step, 0, 'f', 1).arg(dy, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("▼ 电机往前位移 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 往左走 (X+)
+void mainwindow::on_btnMoveLeft_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+    double sign = ui->chkInvertX->isChecked() ? -1.0 : 1.0;
+    double dx = sign * step;
+
+    motorPort_->sendJog(dx, 0, 0, speed);
+    curMachineX_ += dx;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 往左走: 单步 %1 mm (X轴位移 %2 mm, 速度 %3 mm/min)")
+                        .arg(step, 0, 'f', 1).arg(dx, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("◀ 电机往左平移 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 往右走 (X-)
+void mainwindow::on_btnMoveRight_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+    double sign = ui->chkInvertX->isChecked() ? 1.0 : -1.0;
+    double dx = sign * step;
+
+    motorPort_->sendJog(dx, 0, 0, speed);
+    curMachineX_ += dx;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 往右走: 单步 %1 mm (X轴位移 %2 mm, 速度 %3 mm/min)")
+                        .arg(step, 0, 'f', 1).arg(dx, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("▶ 电机往右平移 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 上升 (Z+)
+void mainwindow::on_btnMoveUp_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+
+    motorPort_->sendJog(0, 0, step, speed);
+    curMachineZ_ += step;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 上升: 单步 %1 mm (速度 %2 mm/min)").arg(step, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("▲ 电机上升 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 下降 (Z-)
+void mainwindow::on_btnMoveDown_clicked()
+{
+    if (!ensureMotorPortOpen()) return;
+
+    double step = ui->spinMotorStep->value();
+    int speed = ui->spinMotorSpeed->value();
+
+    motorPort_->sendJog(0, 0, -step, speed);
+    curMachineZ_ -= step;
+    updateRelativeDisplay();
+
+    QString logMsg = QString("[电机控制] 下降: 单步 %1 mm (速度 %2 mm/min)").arg(step, 0, 'f', 1).arg(speed);
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage(QString("▼ 电机下降 %1 mm").arg(step, 0, 'f', 1), 2500);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 紧急停止
+void mainwindow::on_btnMotorStop_clicked()
+{
+    if (motorPort_) {
+        motorPort_->sendStop();
+    }
+    QString logMsg = "[电机急停] 已发送急停控制指令 (!)";
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage("🛑 电机已紧急刹停 (!)", 4000);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 解锁警报
+void mainwindow::on_btnMotorUnlock_clicked()
+{
+    if (motorPort_) {
+        motorPort_->sendUnlock();
+    }
+    QString logMsg = "[电机解锁] 已发送解除锁定报警指令 ($X)";
+    qDebug().noquote() << logMsg;
+    if (ui->statusBar) ui->statusBar->showMessage("🔓 电机已解锁报警 ($X)", 4000);
+    if (ui->reText) {
+        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
+    }
+}
+
+// 查询状态
+void mainwindow::on_btnQueryStatus_clicked()
+{
+    if (motorPort_ && motorPort_->isOpen()) {
+        motorPort_->queryStatus();
+    } else {
+        ensureMotorPortOpen();
+    }
+}
+
+// 速度预设
+void mainwindow::on_btnSpeedPreset_clicked(int speed)
+{
+    ui->spinMotorSpeed->setValue(speed);
+}
+
+// 步长预设
+void mainwindow::on_btnStepPreset_clicked(double step)
+{
+    ui->spinMotorStep->setValue(step);
+}
+
+// 接收电机绝对坐标更新并刷新相对坐标
+void mainwindow::onMotorPositionUpdated(double mx, double my, double mz)
+{
+    curMachineX_ = mx;
+    curMachineY_ = my;
+    curMachineZ_ = mz;
+    hasReceivedMachinePos_ = true;
+    updateRelativeDisplay();
+}
+
+// 接收电机状态与速度更新
+void mainwindow::onMotorStatusUpdated(const QString &state, double feed)
+{
+    lastMotorState_ = state;
+    lastMotorFeed_ = feed;
+
+    if (ui->lblMotorBadge) {
+        if (state == "Idle") {
+            ui->lblMotorBadge->setText("就绪 (Idle)");
+            ui->lblMotorBadge->setStyleSheet("color: #16A34A; font-weight: bold; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 4px; padding: 1px 6px; font-size: 11px;");
+        } else if (state == "Run") {
+            ui->lblMotorBadge->setText("运行中 (Run)");
+            ui->lblMotorBadge->setStyleSheet("color: #D97706; font-weight: bold; background: #FEF3C7; border: 1px solid #FCD34D; border-radius: 4px; padding: 1px 6px; font-size: 11px;");
+        } else if (state == "Hold") {
+            ui->lblMotorBadge->setText("暂停中 (Hold)");
+            ui->lblMotorBadge->setStyleSheet("color: #EA580C; font-weight: bold; background: #FFEDD5; border: 1px solid #FDBA74; border-radius: 4px; padding: 1px 6px; font-size: 11px;");
+        } else if (state == "Alarm") {
+            ui->lblMotorBadge->setText("报警 (Alarm)");
+            ui->lblMotorBadge->setStyleSheet("color: #DC2626; font-weight: bold; background: #FEE2E2; border: 1px solid #FCA5A5; border-radius: 4px; padding: 1px 6px; font-size: 11px;");
+        } else {
+            ui->lblMotorBadge->setText(state);
+            ui->lblMotorBadge->setStyleSheet("color: #4B5563; font-weight: bold; background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 4px; padding: 1px 6px; font-size: 11px;");
+        }
+    }
+
+    double relX = curMachineX_ - refX_;
+    double relY = curMachineY_ - refY_;
+    double relZ = curMachineZ_ - refZ_;
+    if (motorPort_) {
+        motorPort_->updateStatusBarPosition(relX, relY, relZ, state, feed);
+    }
+}
+
+// 刷新相对坐标数显 (DRO)
+void mainwindow::updateRelativeDisplay()
+{
+    double relX = curMachineX_ - refX_;
+    double relY = curMachineY_ - refY_;
+    double relZ = curMachineZ_ - refZ_;
+
+    if (qAbs(relX) < 1e-4) relX = 0.0;
+    if (qAbs(relY) < 1e-4) relY = 0.0;
+    if (qAbs(relZ) < 1e-4) relZ = 0.0;
+
+    QString signX = (relX > 0.0001) ? "+" : "";
+    QString signY = (relY > 0.0001) ? "+" : "";
+    QString signZ = (relZ > 0.0001) ? "+" : "";
+
+    if (ui->lblRelX) ui->lblRelX->setText(QString("%1%2 mm").arg(signX).arg(relX, 0, 'f', 2));
+    if (ui->lblRelY) ui->lblRelY->setText(QString("%1%2 mm").arg(signY).arg(relY, 0, 'f', 2));
+    if (ui->lblRelZ) ui->lblRelZ->setText(QString("%1%2 mm").arg(signZ).arg(relZ, 0, 'f', 2));
+
+    if (motorPort_) {
+        motorPort_->updateStatusBarPosition(relX, relY, relZ, lastMotorState_, lastMotorFeed_);
+    }
+}
+

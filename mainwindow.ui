@@ -247,6 +247,90 @@ QPushButton#initFpgaSignal_bt:pressed {
     background-color: #155E75;
 }
 
+/* 电机相对控制特定样式 */
+QPushButton#btnMoveBack {
+    background-color: #ECFDF5;
+    border: 1px solid #6EE7B7;
+    color: #047857;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 5px;
+}
+QPushButton#btnMoveBack:hover {
+    background-color: #D1FAE5;
+    border-color: #34D399;
+}
+QPushButton#btnMoveBack:pressed {
+    background-color: #A7F3D0;
+}
+
+QPushButton#btnMotorStop {
+    background-color: #DC2626;
+    border: 1px solid #B91C1C;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 5px;
+}
+QPushButton#btnMotorStop:hover {
+    background-color: #B91C1C;
+}
+QPushButton#btnMotorStop:pressed {
+    background-color: #991B1B;
+}
+
+QPushButton#btnMoveFront, QPushButton#btnMoveLeft, QPushButton#btnMoveRight {
+    background-color: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    color: #0F172A;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 5px;
+}
+QPushButton#btnMoveFront:hover, QPushButton#btnMoveLeft:hover, QPushButton#btnMoveRight:hover {
+    background-color: #F1F5F9;
+    border-color: #94A3B8;
+}
+
+QPushButton#btnSetRelZero {
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1D4ED8;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 3px 6px;
+}
+QPushButton#btnSetRelZero:hover {
+    background-color: #DBEAFE;
+    border-color: #93C5FD;
+}
+
+QPushButton#btnGotoInitPos {
+    background-color: #F5F3FF;
+    border: 1px solid #DDD6FE;
+    color: #6D28D9;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 3px 6px;
+}
+QPushButton#btnGotoInitPos:hover {
+    background-color: #EDE9FE;
+    border-color: #C4B5FD;
+}
+
+QSpinBox, QDoubleSpinBox {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 12px;
+    color: #111827;
+}
+QSpinBox:focus, QDoubleSpinBox:focus {
+    border: 2px solid #0078D4;
+    padding: 2px 5px;
+}
+
 /* 选项卡 (Fluent Tabs) */
 QTabWidget::pane {
     border: 1px solid #E5E7EB;
@@ -930,6 +1014,607 @@ QPushButton#manualSendLoad_bt:hover {
              <property name="bottomMargin">
               <number>4</number>
              </property>
+             <item>
+              <widget class="QGroupBox" name="groupManualMotor">
+               <property name="title">
+                <string>🏃 电机相对位移控制 (线圈对齐)</string>
+               </property>
+               <layout class="QVBoxLayout" name="layoutManualMotor">
+                <property name="spacing">
+                 <number>5</number>
+                </property>
+                <property name="leftMargin">
+                 <number>4</number>
+                </property>
+                <property name="topMargin">
+                 <number>6</number>
+                </property>
+                <property name="rightMargin">
+                 <number>4</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>4</number>
+                </property>
+                <item>
+                 <widget class="QFrame" name="frameRelCoords">
+                  <property name="styleSheet">
+                   <string notr="true">QFrame#frameRelCoords { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 2px; }</string>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <layout class="QVBoxLayout" name="layoutRelCoords">
+                   <property name="spacing">
+                    <number>3</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>4</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>4</number>
+                   </property>
+                   <item>
+                    <layout class="QHBoxLayout" name="boxCoordHeader">
+                     <item>
+                      <widget class="QLabel" name="lblRefInfo">
+                       <property name="text">
+                        <string>基准: 2cm对齐初始位</string>
+                       </property>
+                       <property name="toolTip">
+                        <string>基准绝对坐标: X=207.0, Y=273.0, Z=301.0</string>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color: #64748B; font-size: 11px; font-weight: 500;</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="spacerBadge">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>10</width>
+                         <height>10</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="lblMotorBadge">
+                       <property name="text">
+                        <string>就绪 (Idle)</string>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">color: #16A34A; font-weight: bold; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 4px; padding: 1px 6px; font-size: 11px;</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="boxCoordsValues">
+                     <property name="spacing">
+                      <number>4</number>
+                     </property>
+                     <item>
+                      <widget class="QFrame" name="cardRelX">
+                       <property name="styleSheet">
+                        <string notr="true">background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 4px; padding: 1px;</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="layoutCardRelX">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>2</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="lblTitleRelX">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>ΔX (左右)</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #0369A1; font-size: 11px; font-weight: 600;</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="lblRelX">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>+0.00 mm</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #0284C7; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="cardRelY">
+                       <property name="styleSheet">
+                        <string notr="true">background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 4px; padding: 1px;</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="layoutCardRelY">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>2</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="lblTitleRelY">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>ΔY (前后间距)</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #15803D; font-size: 11px; font-weight: 600;</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="lblRelY">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>+0.00 mm</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #16A34A; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QFrame" name="cardRelZ">
+                       <property name="styleSheet">
+                        <string notr="true">background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 1px;</string>
+                       </property>
+                       <layout class="QVBoxLayout" name="layoutCardRelZ">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>2</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>2</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="lblTitleRelZ">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>ΔZ (上下)</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #475569; font-size: 11px; font-weight: 600;</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="lblRelZ">
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="text">
+                           <string>+0.00 mm</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">color: #475569; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="boxZeroActions">
+                     <property name="spacing">
+                      <number>4</number>
+                     </property>
+                     <item>
+                      <widget class="QPushButton" name="btnSetRelZero">
+                       <property name="text">
+                        <string>🎯 设当前为零点</string>
+                       </property>
+                       <property name="toolTip">
+                        <string>将当前机械坐标记录为相对原点 (ΔX=0, ΔY=0, ΔZ=0)</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="btnGotoInitPos">
+                       <property name="text">
+                        <string>🏠 回初始位(2cm对齐)</string>
+                       </property>
+                       <property name="toolTip">
+                        <string>移动到线圈对齐2cm默认位 (X=207, Y=273, Z=301)</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="boxSpeedControl">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="lblMotorSpeed">
+                    <property name="text">
+                     <string>速度:</string>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">font-weight: 500;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="spinMotorSpeed">
+                    <property name="minimum">
+                     <number>50</number>
+                    </property>
+                    <property name="maximum">
+                     <number>5000</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>50</number>
+                    </property>
+                    <property name="value">
+                     <number>1000</number>
+                    </property>
+                    <property name="suffix">
+                     <string> mm/min</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnSpeedSlow">
+                    <property name="maximumWidth">
+                     <number>42</number>
+                    </property>
+                    <property name="text">
+                     <string>300</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>慢速微调 300 mm/min</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnSpeedStd">
+                    <property name="maximumWidth">
+                     <number>48</number>
+                    </property>
+                    <property name="text">
+                     <string>1000</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>标准巡航 1000 mm/min</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnSpeedFast">
+                    <property name="maximumWidth">
+                     <number>48</number>
+                    </property>
+                    <property name="text">
+                     <string>2500</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>快速移动 2500 mm/min</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="boxStepControl">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="lblMotorStep">
+                    <property name="text">
+                     <string>步长:</string>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">font-weight: 500;</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="spinMotorStep">
+                    <property name="minimum">
+                     <double>0.1</double>
+                    </property>
+                    <property name="maximum">
+                     <double>100.0</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>0.5</double>
+                    </property>
+                    <property name="value">
+                     <double>1.0</double>
+                    </property>
+                    <property name="decimals">
+                     <number>1</number>
+                    </property>
+                    <property name="suffix">
+                     <string> mm</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep05">
+                    <property name="maximumWidth">
+                     <number>32</number>
+                    </property>
+                    <property name="text">
+                     <string>0.5</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep1">
+                    <property name="maximumWidth">
+                     <number>28</number>
+                    </property>
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep2">
+                    <property name="maximumWidth">
+                     <number>28</number>
+                    </property>
+                    <property name="text">
+                     <string>2</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep5">
+                    <property name="maximumWidth">
+                     <number>28</number>
+                    </property>
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep10">
+                    <property name="maximumWidth">
+                     <number>32</number>
+                    </property>
+                    <property name="text">
+                     <string>10</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnStep20">
+                    <property name="maximumWidth">
+                     <number>32</number>
+                    </property>
+                    <property name="text">
+                     <string>20</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QGridLayout" name="gridDirectionPad">
+                  <property name="spacing">
+                   <number>4</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="btnMoveBack">
+                    <property name="minimumHeight">
+                     <number>36</number>
+                    </property>
+                    <property name="text">
+                     <string>▲ 往后走 (增大间距)</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>沿Y轴后移，增大发射端与接收端线圈间距 (Y+)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QPushButton" name="btnMoveLeft">
+                    <property name="minimumHeight">
+                     <number>36</number>
+                    </property>
+                    <property name="text">
+                     <string>◀ 往左走</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>水平向左平移调节对齐 (X+)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="btnMotorStop">
+                    <property name="minimumHeight">
+                     <number>36</number>
+                    </property>
+                    <property name="text">
+                     <string>🛑 紧急停止</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>立即刹停当前运动 (!)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QPushButton" name="btnMoveRight">
+                    <property name="minimumHeight">
+                     <number>36</number>
+                    </property>
+                    <property name="text">
+                     <string>往右走 ▶</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>水平向右平移调节对齐 (X-)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="btnMoveFront">
+                    <property name="minimumHeight">
+                     <number>36</number>
+                    </property>
+                    <property name="text">
+                     <string>▼ 往前走 (缩小间距)</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>沿Y轴前移，缩小线圈间距 (Y-)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QPushButton" name="btnMoveUp">
+                    <property name="text">
+                     <string>▲ 上升 (Z+)</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>垂直提升电机高度 (Z+)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QPushButton" name="btnMotorUnlock">
+                    <property name="text">
+                     <string>🔓 解锁 ($X)</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>解除控制器警报锁定状态 ($X)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="2">
+                   <widget class="QPushButton" name="btnMoveDown">
+                    <property name="text">
+                     <string>▼ 下降 (Z-)</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>垂直降低电机高度 (Z-)</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="boxMotorAux">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="QCheckBox" name="chkInvertX">
+                    <property name="text">
+                     <string>X轴反向</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>反转左右平移控制方向</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="chkInvertY">
+                    <property name="text">
+                     <string>Y轴反向</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>反转前后间距控制方向</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="spacerAux">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>10</width>
+                      <height>10</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnQueryStatus">
+                    <property name="text">
+                     <string>🔄 状态查询</string>
+                    </property>
+                    <property name="toolTip">
+                     <string>向控制器发送 '?' 实时查询位置与状态</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
              <item>
               <widget class="QGroupBox" name="groupManualFpga">
                <property name="title">

@@ -5,11 +5,28 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QDebug>
+#include <QTimer>
+#include <QtMath>
 
 SerialMotor::SerialMotor(QObject *parent)
     : SerialPortBase(parent)
 {
     setBaudRate(115200);
+
+    pollTimer_ = new QTimer(this);
+    connect(pollTimer_, &QTimer::timeout, this, [this]() {
+        if (isOpen()) {
+            port_->write("?\n");
+        }
+    });
+
+    connect(this, &SerialPortBase::connectionChanged, this, [this](bool connected) {
+        if (connected) {
+            pollTimer_->start(250);
+        } else {
+            pollTimer_->stop();
+        }
+    });
 }
 
 void SerialMotor::initUI(class Ui::mainwindow *ui,
@@ -226,12 +243,70 @@ void SerialMotor::configurePort()
 
 bool SerialMotor::frameComplete(const QByteArray &buffer) const
 {
-    return buffer.contains("\r\n") || buffer.contains("error");
+    return buffer.contains('\n') || buffer.contains("error") || (buffer.contains('<') && buffer.contains('>'));
 }
 
 void SerialMotor::processFrame(const QByteArray &frame)
 {
-    qDebug() << "SerialMotor received:" << frame;
+    QString str = QString::fromLatin1(frame).trimmed();
+    if (!str.isEmpty()) {
+        // 解析控制器实时状态反馈: <Idle|MPos:207.000,273.000,301.000|FS:0,0>
+        if (str.contains('<') && str.contains("MPos:")) {
+            // 1. 提取状态字
+            int leftAngle = str.indexOf('<');
+            int firstPipe = str.indexOf('|', leftAngle);
+            QString state = "Idle";
+            if (leftAngle != -1 && firstPipe > leftAngle) {
+                state = str.mid(leftAngle + 1, firstPipe - leftAngle - 1).trimmed();
+                int colon = state.indexOf(':');
+                if (colon != -1) state = state.left(colon);
+            }
+
+            // 2. 提取 MPos 机械绝对坐标
+            int mposIdx = str.indexOf("MPos:");
+            if (mposIdx != -1) {
+                int startCoords = mposIdx + 5;
+                int endCoords = str.indexOf('|', startCoords);
+                if (endCoords == -1) endCoords = str.indexOf('>', startCoords);
+                if (endCoords != -1) {
+                    QString coordStr = str.mid(startCoords, endCoords - startCoords);
+                    QStringList coords = coordStr.split(',');
+                    if (coords.size() >= 3) {
+                        bool okX, okY, okZ;
+                        double mx = coords[0].toDouble(&okX);
+                        double my = coords[1].toDouble(&okY);
+                        double mz = coords[2].toDouble(&okZ);
+                        if (okX && okY && okZ) {
+                            lastMX_ = mx;
+                            lastMY_ = my;
+                            lastMZ_ = mz;
+                            hasValidPos_ = true;
+                            emit positionUpdated(mx, my, mz);
+                        }
+                    }
+                }
+            }
+
+            // 3. 提取实时进给速度 FS:feed,speed
+            double feed = 0.0;
+            int fsIdx = str.indexOf("FS:");
+            if (fsIdx != -1) {
+                int startFs = fsIdx + 3;
+                int endFs = str.indexOf('|', startFs);
+                if (endFs == -1) endFs = str.indexOf('>', startFs);
+                if (endFs != -1) {
+                    QString fsStr = str.mid(startFs, endFs - startFs);
+                    QStringList fsParts = fsStr.split(',');
+                    if (!fsParts.isEmpty()) {
+                        feed = fsParts[0].toDouble();
+                    }
+                }
+            }
+
+            emit statusUpdated(state, feed);
+        }
+    }
+
     emit dataReceived(frame);
 }
 
@@ -239,16 +314,22 @@ void SerialMotor::onReadyRead()
 {
     rxBuffer_.append(port_->readAll());
 
-    while (frameComplete(rxBuffer_)) {
-        int endIdx = rxBuffer_.indexOf("\r\n");
+    while (!rxBuffer_.isEmpty()) {
         int frameEnd = -1;
 
-        if (endIdx != -1) {
-            frameEnd = endIdx + 2;
+        int nlIdx = rxBuffer_.indexOf('\n');
+        if (nlIdx != -1) {
+            frameEnd = nlIdx + 1;
         } else {
-            int errIdx = rxBuffer_.indexOf("error");
-            if (errIdx != -1) {
-                frameEnd = errIdx + 5;
+            int gtIdx = rxBuffer_.indexOf('>');
+            int ltIdx = rxBuffer_.indexOf('<');
+            if (gtIdx != -1 && ltIdx != -1 && ltIdx < gtIdx) {
+                frameEnd = gtIdx + 1;
+            } else {
+                int errIdx = rxBuffer_.indexOf("error");
+                if (errIdx != -1) {
+                    frameEnd = errIdx + 5;
+                }
             }
         }
 
@@ -259,3 +340,64 @@ void SerialMotor::onReadyRead()
         processFrame(frame);
     }
 }
+
+void SerialMotor::sendJog(double dx, double dy, double dz, int speed)
+{
+    QString cmd = "G91 G01";
+    if (qAbs(dx) > 1e-4) cmd += QString(" X%1").arg(dx, 0, 'f', 3);
+    if (qAbs(dy) > 1e-4) cmd += QString(" Y%1").arg(dy, 0, 'f', 3);
+    if (qAbs(dz) > 1e-4) cmd += QString(" Z%1").arg(dz, 0, 'f', 3);
+    cmd += QString(" F%1\n").arg(speed);
+    send(cmd.toLatin1());
+}
+
+void SerialMotor::sendAbsoluteMove(double x, double y, double z, int speed)
+{
+    QString cmd = QString("G90 G01 X%1 Y%2 Z%3 F%4\n")
+                    .arg(x, 0, 'f', 3)
+                    .arg(y, 0, 'f', 3)
+                    .arg(z, 0, 'f', 3)
+                    .arg(speed);
+    send(cmd.toLatin1());
+}
+
+void SerialMotor::sendStop()
+{
+    send("!\n");
+}
+
+void SerialMotor::sendUnlock()
+{
+    send("$X\n");
+}
+
+void SerialMotor::queryStatus()
+{
+    send("?\n");
+}
+
+void SerialMotor::updateStatusBarPosition(double relX, double relY, double relZ, const QString &state, double feed)
+{
+    if (statusbar_Xpos) {
+        statusbar_Xpos->setText(QString("ΔX: %1%2").arg(relX > 0.001 ? "+" : "").arg(relX, 0, 'f', 2));
+    }
+    if (statusbar_Ypos) {
+        statusbar_Ypos->setText(QString("ΔY: %1%2").arg(relY > 0.001 ? "+" : "").arg(relY, 0, 'f', 2));
+    }
+    if (statusbar_Zpos) {
+        statusbar_Zpos->setText(QString("ΔZ: %1%2").arg(relZ > 0.001 ? "+" : "").arg(relZ, 0, 'f', 2));
+    }
+    if (statusbar_Speed) {
+        statusbar_Speed->setText(QString("V: %1").arg(feed, 0, 'f', 0));
+    }
+    if (statusbar_Status) {
+        QString cnState = state;
+        if (state == "Idle") cnState = "就绪 (Idle)";
+        else if (state == "Run") cnState = "运行中 (Run)";
+        else if (state == "Hold") cnState = "暂停 (Hold)";
+        else if (state == "Alarm") cnState = "报警 (Alarm)";
+        else if (state == "Home") cnState = "回零 (Home)";
+        statusbar_Status->setText(cnState);
+    }
+}
+
