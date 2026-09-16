@@ -1,0 +1,60 @@
+# ==============================================================================
+# Git Ignore for WPT 2.0 (Qt 5.15 C++ / MinGW 64-bit Project)
+# ==============================================================================
+
+# Qt Creator & IDE settings
+*.pro.user
+*.pro.user.*
+*.autosave
+.vscode/
+.idea/
+*.suo
+*.user
+*.user.*
+*.patch
+
+# C++ Object & Compiled Files
+*.o
+*.obj
+*.a
+*.prl
+*.so
+*.dylib
+
+# Qt Generated intermediate files
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+*.qrc.depends
+.qmake.stash
+Makefile*
+object_script.*
+
+# Build directories
+debug/
+release/
+build/
+bin/
+
+# Temporary files & Logs
+*.log
+build_log.txt
+*.tmp
+*.bak
+*~
+Thumbs.db
+[Dd]esktop.ini
+
+# Keep third-party precompiled libraries (explicitly include USBDAQ DLL & Libs)
+!3rdparty/
+!3rdparty/**
+!3rdparty/USBDAQ_64/*.dll
+!3rdparty/USBDAQ_64/*.lib
+!3rdparty/USBDAQ_64/*.h
+!3rdparty/QXlsx/**
+
+# Generated test output files (optional: keep directory, ignore output excel dumps)
+# *.xlsx in runtime folders (uncomment if you don't want test data tracked in git)
+# gather_data/*.xlsx
+# generate_data/*.xlsx

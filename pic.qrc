@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Pic/connect.png</file>
+        <file>Pic/disconnect.png</file>
+        <file>Pic/down.png</file>
+        <file>Pic/left.png</file>
+        <file>Pic/right.png</file>
+        <file>Pic/up.png</file>
+        <file>Pic/app_icon.png</file>
+    </qresource>
+</RCC>

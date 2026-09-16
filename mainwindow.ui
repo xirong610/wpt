@@ -1,0 +1,1032 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainwindow</class>
+ <widget class="QMainWindow" name="mainwindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>580</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>460</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>无线电能传输(WPT)自动化测试系统 v2.0</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="pic.qrc">
+    <normaloff>:/Pic/app_icon.png</normaloff>:/Pic/app_icon.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* ========================================================
+   Microsoft Fluent Design Style - WPT System 2.0
+   ======================================================== */
+
+QMainWindow, QWidget#centralwidget {
+    background-color: #F3F4F6;
+    font-family: &quot;Segoe UI&quot;, &quot;Microsoft YaHei&quot;, sans-serif;
+    color: #1F2937;
+}
+
+/* 顶部标题栏卡片 */
+QFrame#headerFrame {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 2px 10px;
+    max-height: 48px;
+    min-height: 44px;
+}
+
+QLabel#appTitle {
+    font-size: 16px;
+    font-weight: bold;
+    color: #0078D4;
+}
+
+QLabel#appSubTitle {
+    font-size: 11px;
+    color: #6B7280;
+}
+
+/* Fluent 卡片 */
+QGroupBox {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    margin-top: 14px;
+    padding: 14px 10px 10px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    top: 2px;
+    padding: 0 6px;
+    background-color: #FFFFFF;
+    color: #0078D4;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* 标签 */
+QLabel {
+    color: #374151;
+    font-size: 12px;
+}
+
+/* 输入框与下拉选择框 */
+QLineEdit, QComboBox, QPlainTextEdit, QTextBrowser {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #111827;
+    selection-background-color: #0078D4;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:hover, QComboBox:hover, QPlainTextEdit:hover, QTextBrowser:hover {
+    border-color: #9CA3AF;
+}
+
+QLineEdit:focus, QComboBox:focus, QPlainTextEdit:focus {
+    border: 2px solid #0078D4;
+    padding: 3px 7px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 22px;
+    border-left: none;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #6B7280;
+    margin-right: 6px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 4px;
+    selection-background-color: #0078D4;
+    selection-color: #FFFFFF;
+    outline: none;
+}
+
+/* 按钮通用风格 (Fluent Button) */
+QPushButton {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1F2937;
+    min-height: 22px;
+}
+
+QPushButton:hover {
+    background-color: #F9FAFB;
+    border-color: #9CA3AF;
+}
+
+QPushButton:pressed {
+    background-color: #E5E7EB;
+    border-color: #6B7280;
+}
+
+QPushButton:disabled {
+    background-color: #F3F4F6;
+    color: #9CA3AF;
+    border-color: #E5E7EB;
+}
+
+/* 主操作按钮 (Primary Microsoft Blue) */
+QPushButton#getData_Start_bt {
+    background-color: #0078D4;
+    border: 1px solid #006CBD;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    min-height: 28px;
+}
+
+QPushButton#getData_Start_bt:hover {
+    background-color: #106EBE;
+}
+
+QPushButton#getData_Start_bt:pressed {
+    background-color: #005A9E;
+}
+
+/* 启动电机 (Fluent Green) */
+QPushButton#start_bt {
+    background-color: #F0FDF4;
+    border: 1px solid #86EFAC;
+    color: #15803D;
+    font-weight: bold;
+}
+
+QPushButton#start_bt:hover {
+    background-color: #DCFCE7;
+    border-color: #4ADE80;
+}
+
+QPushButton#start_bt:pressed {
+    background-color: #BBF7D0;
+}
+
+/* 停止电机 (Fluent Red) */
+QPushButton#stop_bt {
+    background-color: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #B91C1C;
+    font-weight: bold;
+}
+
+QPushButton#stop_bt:hover {
+    background-color: #FEE2E2;
+    border-color: #F87171;
+}
+
+QPushButton#stop_bt:pressed {
+    background-color: #FCA5A5;
+}
+
+/* 刷新所有串口按钮 (Fluent Accent Outline) */
+QPushButton#refreshPorts_bt {
+    background-color: #FFFFFF;
+    border: 1px solid #0078D4;
+    color: #0078D4;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+QPushButton#refreshPorts_bt:hover {
+    background-color: #EFF6FC;
+    border-color: #005A9E;
+    color: #005A9E;
+}
+
+QPushButton#refreshPorts_bt:pressed {
+    background-color: #DEECF9;
+}
+
+QPushButton#initFpgaSignal_bt {
+    background-color: #0E7090;
+    color: #FFFFFF;
+    font-weight: 600;
+    border: 1px solid #0891B2;
+}
+
+QPushButton#initFpgaSignal_bt:hover {
+    background-color: #0891B2;
+}
+
+QPushButton#initFpgaSignal_bt:pressed {
+    background-color: #155E75;
+}
+
+/* 选项卡 (Fluent Tabs) */
+QTabWidget::pane {
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background-color: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding: 6px 16px;
+    margin-right: 3px;
+    font-size: 12px;
+    color: #4B5563;
+}
+
+QTabBar::tab:selected {
+    background-color: #FFFFFF;
+    border-bottom: 2px solid #0078D4;
+    color: #0078D4;
+    font-weight: 600;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #E5E7EB;
+}
+
+/* 滚动条 */
+QScrollBar:vertical {
+    border: none;
+    background-color: #F9FAFB;
+    width: 6px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #D1D5DB;
+    min-height: 20px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #9CA3AF;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainVerticalLayout">
+    <property name="spacing">
+     <number>6</number>
+    </property>
+    <property name="leftMargin">
+     <number>8</number>
+    </property>
+    <property name="topMargin">
+     <number>8</number>
+    </property>
+    <property name="rightMargin">
+     <number>8</number>
+    </property>
+    <property name="bottomMargin">
+     <number>4</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="headerFrame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>44</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="headerLayout">
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>2</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="headerLogoLabel">
+         <property name="minimumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="pic.qrc">:/Pic/app_icon.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="titleVBox">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="appTitle">
+           <property name="text">
+            <string>WPT 无线电能传输自动化测试系统 2.0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="appSubTitle">
+           <property name="text">
+            <string>Wireless Power Transfer Multi-Axis Motion &amp; High-Frequency Sampling Platform</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="headerSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>采样间隔时间:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="gather_time">
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>500</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
+         </property>
+         <property name="placeholderText">
+          <string>500</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="ms">
+         <property name="text">
+          <string>ms</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSplitter" name="mainSplitter">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <widget class="QScrollArea" name="sidebarScroll">
+       <property name="minimumSize">
+        <size>
+         <width>320</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>380</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::NoFrame</enum>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="sidebarContent">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>340</width>
+          <height>800</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="sidebarLayout">
+         <property name="spacing">
+          <number>8</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="refreshPorts_bt">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>34</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>⟳ 刷新检测所有串口</string>
+           </property>
+           <property name="toolTip">
+            <string>检测串口热插拔变化，刷新所有串口下拉列表与设备备注状态</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupMotor">
+           <property name="title">
+            <string>运动控制器 (XYZ 电机)</string>
+           </property>
+           <layout class="QVBoxLayout" name="groupMotorLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item>
+             <layout class="QGridLayout" name="gridMotorParams">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>串口号:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="comcb"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>波特率:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="baudratebc"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>数据位:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="datacb"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>停止位:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QComboBox" name="stopcb"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>校验位:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QComboBox" name="paritycb"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="motorActionLayout1">
+              <item>
+               <widget class="QPushButton" name="openbt">
+                <property name="text">
+                 <string>打开</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="motorConfig_bt">
+                <property name="text">
+                 <string>电机配置...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="motorActionLayout2">
+              <item>
+               <widget class="QPushButton" name="home_bt">
+                <property name="text">
+                 <string>回零位</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="initpos_bt">
+                <property name="text">
+                 <string>初始位</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupFpga">
+           <property name="title">
+            <string>FPGA 频率/相位控制器</string>
+           </property>
+           <layout class="QGridLayout" name="gridFpga">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>串口号:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comcb1"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>波特率:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="baudratebc1"/>
+            </item>
+             <item row="2" column="0">
+              <widget class="QPushButton" name="openbt1">
+               <property name="text">
+                <string>打开</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="initFpgaSignal_bt">
+               <property name="text">
+                <string>⚡ 初始化信号</string>
+               </property>
+               <property name="toolTip">
+                <string>发送初始化信号: 频率 65000Hz, 死区 5%, 相位差 90°</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupLoad">
+           <property name="title">
+            <string>可编程电子负载仪</string>
+           </property>
+           <layout class="QGridLayout" name="gridLoad">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>串口号:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comcb2"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>波特率:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="baudratebc2"/>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <widget class="QPushButton" name="openbt2">
+              <property name="text">
+               <string>打开</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupWorkflow">
+           <property name="title">
+            <string>自动化测试工作流</string>
+           </property>
+           <layout class="QVBoxLayout" name="workflowLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="creatData_bt">
+              <property name="text">
+               <string>1. 生成测试参数...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="param_Loading_bt">
+              <property name="text">
+               <string>2. 加载 Excel 参数表</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="getData_Start_bt">
+              <property name="text">
+               <string>3. 开始运行测试</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="motorControlHBox">
+              <item>
+               <widget class="QPushButton" name="start_bt">
+                <property name="text">
+                 <string>启动电机</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stop_bt">
+                <property name="text">
+                 <string>停止电机</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="manual_bt">
+              <property name="text">
+               <string>手动调试面板...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="sidebarSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QSplitter" name="rightSplitter">
+       <property name="orientation">
+        <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <widget class="QWidget" name="chartContainer" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>1</horstretch>
+          <verstretch>3</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="chartGrid">
+         <property name="leftMargin">
+          <number>4</number>
+         </property>
+         <property name="topMargin">
+          <number>4</number>
+         </property>
+         <property name="rightMargin">
+          <number>4</number>
+         </property>
+         <property name="bottomMargin">
+          <number>4</number>
+         </property>
+         <property name="spacing">
+          <number>6</number>
+         </property>
+        </layout>
+       </widget>
+       <widget class="QTabWidget" name="consoleTabs">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tabMonitor">
+         <attribute name="title">
+          <string>串口监控与回显</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="tabMonitorLayout">
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <property name="leftMargin">
+           <number>6</number>
+          </property>
+          <property name="topMargin">
+           <number>6</number>
+          </property>
+          <property name="rightMargin">
+           <number>6</number>
+          </property>
+          <property name="bottomMargin">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QTextBrowser" name="reText"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="tabMonitorBar">
+            <item>
+             <spacer name="spacerMonitor">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="sendbt_2">
+              <property name="text">
+               <string>清空回显</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabMotorManual">
+         <attribute name="title">
+          <string>电机 G代码手动下发</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="tabMotorManualLayout">
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <property name="leftMargin">
+           <number>6</number>
+          </property>
+          <property name="topMargin">
+           <number>6</number>
+          </property>
+          <property name="rightMargin">
+           <number>6</number>
+          </property>
+          <property name="bottomMargin">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QPlainTextEdit" name="send_motor_edit">
+            <property name="placeholderText">
+             <string>输入电机 G代码指令，例如：G90G01X10Y10Z10F1000</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="tabMotorBar">
+            <item>
+             <spacer name="spacerMotor">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="send_motor_bt">
+              <property name="text">
+               <string>发送电机指令</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabLoadManual">
+         <attribute name="title">
+          <string>负载仪指令手动下发</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="tabLoadManualLayout">
+          <property name="spacing">
+           <number>4</number>
+          </property>
+          <property name="leftMargin">
+           <number>6</number>
+          </property>
+          <property name="topMargin">
+           <number>6</number>
+          </property>
+          <property name="rightMargin">
+           <number>6</number>
+          </property>
+          <property name="bottomMargin">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QPlainTextEdit" name="send_load_edit">
+            <property name="placeholderText">
+             <string>输入电子负载仪 ASCII 指令，例如：RESI1:CR 50</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="tabLoadBar">
+            <item>
+             <spacer name="spacerLoad">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="send_load_bt">
+              <property name="text">
+               <string>发送负载指令</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1440</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>文件(&amp;F)</string>
+    </property>
+    <addaction name="new_file"/>
+    <addaction name="separator"/>
+    <addaction name="openGet_data"/>
+    <addaction name="openGene_data"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>操作(&amp;O)</string>
+    </property>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="new_file">
+   <property name="text">
+    <string>新建测试任务</string>
+   </property>
+  </action>
+  <action name="openGet_data">
+   <property name="text">
+    <string>打开采集数据 (Excel)...</string>
+   </property>
+  </action>
+  <action name="openGene_data">
+   <property name="text">
+    <string>打开生成参数 (Excel)...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
