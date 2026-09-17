@@ -44,6 +44,7 @@ public:
     int g_time();         // 获取采集时间
     writedata* getWriteDeal() const { return write_deal; }  // 新增访问方法
     void refreshAllSerialPorts(); // 刷新所有串口并更新设备状态与备注
+    void appendLog(const QString &msg); // 同步输出日志到中央波形回显与手动调试控制台
 
 private slots:
     void on_refreshPorts_bt_clicked(); // 刷新检测所有串口按钮点击事件

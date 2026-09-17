@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
-    <height>580</height>
+    <width>1280</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>800</width>
-    <height>460</height>
+    <width>950</width>
+    <height>520</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -433,6 +433,61 @@ QPushButton#manualSendLoad_bt {
 }
 QPushButton#manualSendLoad_bt:hover {
     background-color: #B45309;
+}
+
+/* 电机相对坐标卡片与数显 */
+QFrame#cardRelX {
+    background-color: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    border-radius: 8px;
+}
+QFrame#cardRelY {
+    background-color: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-radius: 8px;
+}
+QFrame#cardRelZ {
+    background-color: #F5F3FF;
+    border: 1px solid #DDD6FE;
+    border-radius: 8px;
+}
+QLabel#lblRelX {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0284C7;
+}
+QLabel#lblRelY {
+    font-size: 20px;
+    font-weight: bold;
+    color: #16A34A;
+}
+QLabel#lblRelZ {
+    font-size: 20px;
+    font-weight: bold;
+    color: #7C3AED;
+}
+
+/* 主选项卡样式强化 */
+QTabWidget#mainTabWidget > QTabBar::tab {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 22px;
+}
+
+QPushButton#btnBackToAuto {
+    background-color: #0078D4;
+    border: 1px solid #006CBD;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 5px;
+    padding: 5px 14px;
+}
+QPushButton#btnBackToAuto:hover {
+    background-color: #106EBE;
+}
+QPushButton#btnBackToAuto:pressed {
+    background-color: #005A9E;
 }
 </string>
   </property>
@@ -860,1045 +915,107 @@ QPushButton#manualSendLoad_bt:hover {
           </widget>
          </item>
          <item>
-          <widget class="QTabWidget" name="modeTabs">
-           <property name="currentIndex">
-            <number>0</number>
+          <widget class="QGroupBox" name="groupWorkflow">
+           <property name="title">
+            <string>🚀 自动化测试工作流</string>
            </property>
-           <widget class="QWidget" name="tabAutoWorkflow">
-            <attribute name="title">
-             <string>🚀 自动化测试</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="tabAutoLayout">
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <property name="leftMargin">
-              <number>4</number>
-             </property>
-             <property name="topMargin">
-              <number>6</number>
-             </property>
-             <property name="rightMargin">
-              <number>4</number>
-             </property>
-             <property name="bottomMargin">
-              <number>4</number>
-             </property>
-             <item>
-              <widget class="QGroupBox" name="groupWorkflow">
-               <property name="title">
-                <string>测试工作流</string>
-               </property>
-               <layout class="QVBoxLayout" name="workflowLayout">
-                <property name="spacing">
-                 <number>6</number>
+           <layout class="QVBoxLayout" name="workflowLayout">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <property name="leftMargin">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>12</number>
+            </property>
+            <property name="rightMargin">
+             <number>6</number>
+            </property>
+            <property name="bottomMargin">
+             <number>8</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="creatData_bt">
+              <property name="text">
+               <string>1. 生成测试参数表...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="param_Loading_bt">
+              <property name="text">
+               <string>2. 加载 Excel 参数表</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="getData_Start_bt">
+              <property name="text">
+               <string>3. 开始运行测试</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="motorHBox1">
+              <item>
+               <widget class="QPushButton" name="home_bt">
+                <property name="text">
+                 <string>回零位</string>
                 </property>
-                <item>
-                 <widget class="QPushButton" name="creatData_bt">
-                  <property name="text">
-                   <string>1. 生成测试参数表...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="param_Loading_bt">
-                  <property name="text">
-                   <string>2. 加载 Excel 参数表</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="getData_Start_bt">
-                  <property name="text">
-                   <string>3. 开始运行测试</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupMotorActions">
-               <property name="title">
-                <string>电机运动控制</string>
-               </property>
-               <layout class="QVBoxLayout" name="motorActionsLayout">
-                <property name="spacing">
-                 <number>6</number>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="initpos_bt">
+                <property name="text">
+                 <string>初始位</string>
                 </property>
-                <item>
-                 <layout class="QHBoxLayout" name="motorHBox1">
-                  <item>
-                   <widget class="QPushButton" name="home_bt">
-                    <property name="text">
-                     <string>回零位</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="initpos_bt">
-                    <property name="text">
-                     <string>初始位</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="motorHBox2">
-                  <item>
-                   <widget class="QPushButton" name="start_bt">
-                    <property name="text">
-                     <string>启动电机</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="stop_bt">
-                    <property name="text">
-                     <string>停止电机</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="motorConfig_bt">
-                  <property name="text">
-                   <string>电机详细参数配置...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="manual_bt">
-                  <property name="text">
-                   <string>🛠️ 切换到手动交互调试 &gt;&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <spacer name="autoSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="tabManualDebug">
-            <attribute name="title">
-             <string>🛠️ 手动调试</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="tabManualLayout">
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <property name="leftMargin">
-              <number>4</number>
-             </property>
-             <property name="topMargin">
-              <number>6</number>
-             </property>
-             <property name="rightMargin">
-              <number>4</number>
-             </property>
-             <property name="bottomMargin">
-              <number>4</number>
-             </property>
-             <item>
-              <widget class="QGroupBox" name="groupManualMotor">
-               <property name="title">
-                <string>🏃 电机相对位移控制 (线圈对齐)</string>
-               </property>
-               <layout class="QVBoxLayout" name="layoutManualMotor">
-                <property name="spacing">
-                 <number>5</number>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="motorHBox2">
+              <item>
+               <widget class="QPushButton" name="start_bt">
+                <property name="text">
+                 <string>启动电机</string>
                 </property>
-                <property name="leftMargin">
-                 <number>4</number>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stop_bt">
+                <property name="text">
+                 <string>停止电机</string>
                 </property>
-                <property name="topMargin">
-                 <number>6</number>
-                </property>
-                <property name="rightMargin">
-                 <number>4</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>4</number>
-                </property>
-                <item>
-                 <widget class="QFrame" name="frameRelCoords">
-                  <property name="styleSheet">
-                   <string notr="true">QFrame#frameRelCoords { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 2px; }</string>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
-                  <layout class="QVBoxLayout" name="layoutRelCoords">
-                   <property name="spacing">
-                    <number>3</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>4</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>4</number>
-                   </property>
-                   <item>
-                    <layout class="QHBoxLayout" name="boxCoordHeader">
-                     <item>
-                      <widget class="QLabel" name="lblRefInfo">
-                       <property name="text">
-                        <string>基准: 2cm对齐初始位</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>基准绝对坐标: X=207.0, Y=273.0, Z=301.0</string>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">color: #64748B; font-size: 11px; font-weight: 500;</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="spacerBadge">
-                       <property name="orientation">
-                        <enum>Qt::Orientation::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>10</width>
-                         <height>10</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="lblMotorBadge">
-                       <property name="text">
-                        <string>就绪 (Idle)</string>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true">color: #16A34A; font-weight: bold; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 4px; padding: 1px 6px; font-size: 11px;</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="boxCoordsValues">
-                     <property name="spacing">
-                      <number>4</number>
-                     </property>
-                     <item>
-                      <widget class="QFrame" name="cardRelX">
-                       <property name="styleSheet">
-                        <string notr="true">background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 4px; padding: 1px;</string>
-                       </property>
-                       <layout class="QVBoxLayout" name="layoutCardRelX">
-                        <property name="spacing">
-                         <number>0</number>
-                        </property>
-                        <property name="leftMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>2</number>
-                        </property>
-                        <item>
-                         <widget class="QLabel" name="lblTitleRelX">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>ΔX (左右)</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #0369A1; font-size: 11px; font-weight: 600;</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="lblRelX">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>+0.00 mm</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #0284C7; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QFrame" name="cardRelY">
-                       <property name="styleSheet">
-                        <string notr="true">background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 4px; padding: 1px;</string>
-                       </property>
-                       <layout class="QVBoxLayout" name="layoutCardRelY">
-                        <property name="spacing">
-                         <number>0</number>
-                        </property>
-                        <property name="leftMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>2</number>
-                        </property>
-                        <item>
-                         <widget class="QLabel" name="lblTitleRelY">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>ΔY (前后间距)</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #15803D; font-size: 11px; font-weight: 600;</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="lblRelY">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>+0.00 mm</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #16A34A; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QFrame" name="cardRelZ">
-                       <property name="styleSheet">
-                        <string notr="true">background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 4px; padding: 1px;</string>
-                       </property>
-                       <layout class="QVBoxLayout" name="layoutCardRelZ">
-                        <property name="spacing">
-                         <number>0</number>
-                        </property>
-                        <property name="leftMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>2</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>2</number>
-                        </property>
-                        <item>
-                         <widget class="QLabel" name="lblTitleRelZ">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>ΔZ (上下)</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #475569; font-size: 11px; font-weight: 600;</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="lblRelZ">
-                          <property name="alignment">
-                           <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                          <property name="text">
-                           <string>+0.00 mm</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">color: #475569; font-size: 13px; font-weight: bold; font-family: 'Consolas', 'Courier New', monospace;</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="boxZeroActions">
-                     <property name="spacing">
-                      <number>4</number>
-                     </property>
-                     <item>
-                      <widget class="QPushButton" name="btnSetRelZero">
-                       <property name="text">
-                        <string>🎯 设当前为零点</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>将当前机械坐标记录为相对原点 (ΔX=0, ΔY=0, ΔZ=0)</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QPushButton" name="btnGotoInitPos">
-                       <property name="text">
-                        <string>🏠 回初始位(2cm对齐)</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>移动到线圈对齐2cm默认位 (X=207, Y=273, Z=301)</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="boxSpeedControl">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="lblMotorSpeed">
-                    <property name="text">
-                     <string>速度:</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-weight: 500;</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QSpinBox" name="spinMotorSpeed">
-                    <property name="minimum">
-                     <number>50</number>
-                    </property>
-                    <property name="maximum">
-                     <number>5000</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>50</number>
-                    </property>
-                    <property name="value">
-                     <number>1000</number>
-                    </property>
-                    <property name="suffix">
-                     <string> mm/min</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnSpeedSlow">
-                    <property name="maximumWidth">
-                     <number>42</number>
-                    </property>
-                    <property name="text">
-                     <string>300</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>慢速微调 300 mm/min</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnSpeedStd">
-                    <property name="maximumWidth">
-                     <number>48</number>
-                    </property>
-                    <property name="text">
-                     <string>1000</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>标准巡航 1000 mm/min</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnSpeedFast">
-                    <property name="maximumWidth">
-                     <number>48</number>
-                    </property>
-                    <property name="text">
-                     <string>2500</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>快速移动 2500 mm/min</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="boxStepControl">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="lblMotorStep">
-                    <property name="text">
-                     <string>步长:</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-weight: 500;</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QDoubleSpinBox" name="spinMotorStep">
-                    <property name="minimum">
-                     <double>0.1</double>
-                    </property>
-                    <property name="maximum">
-                     <double>100.0</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>0.5</double>
-                    </property>
-                    <property name="value">
-                     <double>1.0</double>
-                    </property>
-                    <property name="decimals">
-                     <number>1</number>
-                    </property>
-                    <property name="suffix">
-                     <string> mm</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep05">
-                    <property name="maximumWidth">
-                     <number>32</number>
-                    </property>
-                    <property name="text">
-                     <string>0.5</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep1">
-                    <property name="maximumWidth">
-                     <number>28</number>
-                    </property>
-                    <property name="text">
-                     <string>1</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep2">
-                    <property name="maximumWidth">
-                     <number>28</number>
-                    </property>
-                    <property name="text">
-                     <string>2</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep5">
-                    <property name="maximumWidth">
-                     <number>28</number>
-                    </property>
-                    <property name="text">
-                     <string>5</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep10">
-                    <property name="maximumWidth">
-                     <number>32</number>
-                    </property>
-                    <property name="text">
-                     <string>10</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnStep20">
-                    <property name="maximumWidth">
-                     <number>32</number>
-                    </property>
-                    <property name="text">
-                     <string>20</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QGridLayout" name="gridDirectionPad">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="btnMoveBack">
-                    <property name="minimumHeight">
-                     <number>36</number>
-                    </property>
-                    <property name="text">
-                     <string>▲ 往后走 (增大间距)</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>沿Y轴后移，增大发射端与接收端线圈间距 (Y+)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QPushButton" name="btnMoveLeft">
-                    <property name="minimumHeight">
-                     <number>36</number>
-                    </property>
-                    <property name="text">
-                     <string>◀ 往左走</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>水平向左平移调节对齐 (X+)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QPushButton" name="btnMotorStop">
-                    <property name="minimumHeight">
-                     <number>36</number>
-                    </property>
-                    <property name="text">
-                     <string>🛑 紧急停止</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>立即刹停当前运动 (!)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <widget class="QPushButton" name="btnMoveRight">
-                    <property name="minimumHeight">
-                     <number>36</number>
-                    </property>
-                    <property name="text">
-                     <string>往右走 ▶</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>水平向右平移调节对齐 (X-)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QPushButton" name="btnMoveFront">
-                    <property name="minimumHeight">
-                     <number>36</number>
-                    </property>
-                    <property name="text">
-                     <string>▼ 往前走 (缩小间距)</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>沿Y轴前移，缩小线圈间距 (Y-)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QPushButton" name="btnMoveUp">
-                    <property name="text">
-                     <string>▲ 上升 (Z+)</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>垂直提升电机高度 (Z+)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QPushButton" name="btnMotorUnlock">
-                    <property name="text">
-                     <string>🔓 解锁 ($X)</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>解除控制器警报锁定状态 ($X)</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="2">
-                   <widget class="QPushButton" name="btnMoveDown">
-                    <property name="text">
-                     <string>▼ 下降 (Z-)</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>垂直降低电机高度 (Z-)</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="boxMotorAux">
-                  <property name="spacing">
-                   <number>6</number>
-                  </property>
-                  <item>
-                   <widget class="QCheckBox" name="chkInvertX">
-                    <property name="text">
-                     <string>X轴反向</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>反转左右平移控制方向</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QCheckBox" name="chkInvertY">
-                    <property name="text">
-                     <string>Y轴反向</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>反转前后间距控制方向</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="spacerAux">
-                    <property name="orientation">
-                     <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>10</width>
-                      <height>10</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnQueryStatus">
-                    <property name="text">
-                     <string>🔄 状态查询</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>向控制器发送 '?' 实时查询位置与状态</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupManualFpga">
-               <property name="title">
-                <string>⚡ FPGA 频率/死区/相位</string>
-               </property>
-               <layout class="QVBoxLayout" name="layoutManualFpga">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <item>
-                 <layout class="QGridLayout" name="gridFpgaParams">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="lblFreq">
-                    <property name="text">
-                     <string>频率 (Hz):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="manualFreqEdit">
-                    <property name="text">
-                     <string>85000</string>
-                    </property>
-                    <property name="placeholderText">
-                     <string>0-100000</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="lblDead">
-                    <property name="text">
-                     <string>死区 (%):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QLineEdit" name="manualDeadbandEdit">
-                    <property name="text">
-                     <string>5</string>
-                    </property>
-                    <property name="placeholderText">
-                     <string>0-10</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="lblPhase">
-                    <property name="text">
-                     <string>相位差 (°):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QLineEdit" name="manualPhaseDiffEdit">
-                    <property name="text">
-                     <string>90</string>
-                    </property>
-                    <property name="placeholderText">
-                     <string>0-180</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="lblAngleAB">
-                    <property name="text">
-                     <string>A / B 角 (°):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <layout class="QHBoxLayout" name="boxAngleAB">
-                    <property name="spacing">
-                     <number>4</number>
-                    </property>
-                    <item>
-                     <widget class="QLineEdit" name="manualAngleAEdit">
-                      <property name="text">
-                       <string>90</string>
-                      </property>
-                      <property name="placeholderText">
-                       <string>A组角</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="manualAngleBEdit">
-                      <property name="text">
-                       <string>90</string>
-                      </property>
-                      <property name="placeholderText">
-                       <string>B组角</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="lblAngleCD">
-                    <property name="text">
-                     <string>C / D 角 (°):</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <layout class="QHBoxLayout" name="boxAngleCD">
-                    <property name="spacing">
-                     <number>4</number>
-                    </property>
-                    <item>
-                     <widget class="QLineEdit" name="manualAngleCEdit">
-                      <property name="text">
-                       <string>90</string>
-                      </property>
-                      <property name="placeholderText">
-                       <string>C组角</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="manualAngleDEdit">
-                      <property name="text">
-                       <string>90</string>
-                      </property>
-                      <property name="placeholderText">
-                       <string>D组角</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="boxFpgaBtns">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item>
-                   <widget class="QPushButton" name="manualSendSignal_bt">
-                    <property name="text">
-                     <string>⚡ 发送信号</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="initFpgaSignal_bt">
-                    <property name="text">
-                     <string>⚡ 65k初始化</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>发送初始化信号: 频率 65000Hz, 死区 5%, 相位差 90°</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="manualSignalSendComboBox">
-                  <property name="editable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="toolTip">
-                   <string>16进制完整报文预览与发送历史记录</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGroupBox" name="groupManualLoad">
-               <property name="title">
-                <string>🔋 可编程电子负载仪控制</string>
-               </property>
-               <layout class="QVBoxLayout" name="layoutManualLoad">
-                <property name="spacing">
-                 <number>5</number>
-                </property>
-                <item>
-                 <layout class="QGridLayout" name="gridLoadParams">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="lblLoadMode">
-                    <property name="text">
-                     <string>工作模式:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="manualLoadModeComboBox">
-                    <item>
-                     <property name="text">
-                      <string>CR (定电阻模式)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>CC (定电流模式)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>CV (定电压模式)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>CP (定功率模式)</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="lblLoadVal">
-                    <property name="text">
-                     <string>设定数值:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <layout class="QHBoxLayout" name="boxLoadVal">
-                    <property name="spacing">
-                     <number>4</number>
-                    </property>
-                    <item>
-                     <widget class="QLineEdit" name="manualLoadValueEdit">
-                      <property name="text">
-                       <string>50.000</string>
-                      </property>
-                      <property name="placeholderText">
-                       <string>阻值(Ω)/数值</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="manualSendLoad_bt">
-                      <property name="maximumSize">
-                       <size>
-                        <width>80</width>
-                        <height>16777215</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>发送指令</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="manualLoadSendComboBox">
-                  <property name="editable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="toolTip">
-                   <string>SCPI 负载指令预览与历史记录</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-             <item>
-              <spacer name="manualSpacer">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPushButton" name="manual_bt">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>34</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>🛠️ 切换至手动调试与线圈对齐 &gt;&gt;</string>
+              </property>
+              <property name="toolTip">
+               <string>进入中央手动调试面板，进行电机相对位移、线圈对齐、FPGA与负载参数调节</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="motorConfig_bt">
+              <property name="text">
+               <string>电机详细参数配置...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -1909,7 +1026,7 @@ QPushButton#manualSendLoad_bt:hover {
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
-             <height>40</height>
+             <height>20</height>
             </size>
            </property>
           </spacer>
@@ -1917,7 +1034,32 @@ QPushButton#manualSendLoad_bt:hover {
         </layout>
        </widget>
       </widget>
-      <widget class="QSplitter" name="rightSplitter">
+      <widget class="QTabWidget" name="mainTabWidget">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tabAutoMain">
+        <attribute name="title">
+         <string>📊 自动化实验与实时波形</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="layoutTabAutoMain">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QSplitter" name="rightSplitter">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
        </property>
@@ -2113,8 +1255,1073 @@ QPushButton#manualSendLoad_bt:hover {
         </widget>
        </widget>
       </widget>
-     </widget>
-    </item>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="tabManualMain">
+    <attribute name="title">
+     <string>🛠️ 手动调试与线圈对齐</string>
+    </attribute>
+    <layout class="QVBoxLayout" name="layoutTabManualMain">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QScrollArea" name="manualScrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <widget class="QWidget" name="manualScrollContent">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>880</width>
+          <height>560</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="layoutManualMainCols">
+         <property name="spacing">
+          <number>12</number>
+         </property>
+         <property name="leftMargin">
+          <number>10</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>10</number>
+         </property>
+         <property name="bottomMargin">
+          <number>10</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="layoutManualColLeft">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupRelCoords">
+             <property name="title">
+              <string>🎯 电机相对位移数显 (基准原点: 线圈对齐2cm X207, Y273, Z301)</string>
+             </property>
+             <layout class="QVBoxLayout" name="layoutRelCoords">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="boxMotorHeader">
+                <item>
+                 <widget class="QLabel" name="lblRefNotice">
+                  <property name="text">
+                   <string>基准原点: X=207, Y=273, Z=301 (2cm初始对齐)</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6B7280; font-size: 11px;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacerMotorHeader">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblMotorBadge">
+                  <property name="text">
+                   <string>就绪 (Idle)</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #16A34A; font-weight: bold; background: #DCFCE7; border: 1px solid #86EFAC; border-radius: 4px; padding: 2px 8px; font-size: 11px;</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="layoutDroCards">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QFrame" name="cardRelX">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <layout class="QVBoxLayout" name="layoutCardX">
+                   <property name="spacing">
+                    <number>2</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="lblTitleRelX">
+                     <property name="text">
+                      <string>左右偏移 (ΔX)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 11px; font-weight: 600; color: #0369A1;</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblRelX">
+                     <property name="text">
+                      <string>+0.00 mm</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblSubRelX">
+                     <property name="text">
+                      <string>(线圈横向对齐)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 10px; color: #64748B;</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="cardRelY">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <layout class="QVBoxLayout" name="layoutCardY">
+                   <property name="spacing">
+                    <number>2</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="lblTitleRelY">
+                     <property name="text">
+                      <string>前后间距 (ΔY)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 11px; font-weight: 600; color: #047857;</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblRelY">
+                     <property name="text">
+                      <string>+0.00 mm</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblSubRelY">
+                     <property name="text">
+                      <string>(+增大间距 / -靠近)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 10px; color: #64748B;</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="cardRelZ">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <layout class="QVBoxLayout" name="layoutCardZ">
+                   <property name="spacing">
+                    <number>2</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="lblTitleRelZ">
+                     <property name="text">
+                      <string>垂直升降 (ΔZ)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 11px; font-weight: 600; color: #6D28D9;</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblRelZ">
+                     <property name="text">
+                      <string>+0.00 mm</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="lblSubRelZ">
+                     <property name="text">
+                      <string>(+上升 / -下降)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 10px; color: #64748B;</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxZeroBtns">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="btnSetRelZero">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>28</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>🎯 设当前位置为相对零点 (0, 0, 0)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>将当前机械坐标记录为相对零点基准</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnGotoInitPos">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>28</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>🏠 回到2cm对齐初始位 (X207, Y273, Z301)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>运动到标准线圈对齐2cm间距位置并设为相对零点</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupMotorMove">
+             <property name="title">
+              <string>🕹️ 电机相对位移控制 (线圈间距拉大 / 左右对齐调节)</string>
+             </property>
+             <layout class="QVBoxLayout" name="layoutMotorMove">
+              <property name="spacing">
+               <number>8</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="boxSpeedLine">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="lblSpeed">
+                  <property name="text">
+                   <string>运行速度:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinMotorSpeed">
+                  <property name="minimum">
+                   <number>50</number>
+                  </property>
+                  <property name="maximum">
+                   <number>10000</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>100</number>
+                  </property>
+                  <property name="value">
+                   <number>1000</number>
+                  </property>
+                  <property name="suffix">
+                   <string> mm/min</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblSpeedPresets">
+                  <property name="text">
+                   <string>预设:</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6B7280;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnSpeedSlow">
+                  <property name="text">
+                   <string>300 慢速</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnSpeedStd">
+                  <property name="text">
+                   <string>1000 标准</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnSpeedFast">
+                  <property name="text">
+                   <string>2500 快速</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacerSpeedLine">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxStepLine">
+                <property name="spacing">
+                 <number>4</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="lblStep">
+                  <property name="text">
+                   <string>单步步长:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="spinMotorStep">
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="minimum">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>100.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.500000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="suffix">
+                   <string> mm</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblStepPresets">
+                  <property name="text">
+                   <string>档位:</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6B7280;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep05">
+                  <property name="text">
+                   <string>0.5</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep1">
+                  <property name="text">
+                   <string>1.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep2">
+                  <property name="text">
+                   <string>2.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep5">
+                  <property name="text">
+                   <string>5.0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep10">
+                  <property name="text">
+                   <string>10</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnStep20">
+                  <property name="text">
+                   <string>20</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacerStepLine">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridDPad">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item row="0" column="1">
+                 <widget class="QPushButton" name="btnMoveBack">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>▲ 往后走 (增大间距 Y+)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>发射与接收线圈拉大间距</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QPushButton" name="btnMoveLeft">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>◀ 往左走 (X+)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>横向向左平移对齐</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QPushButton" name="btnMotorStop">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>🛑 紧急刹停 (!)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>立即停止所有轴运动</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QPushButton" name="btnMoveRight">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>往右走 (X-) ▶</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>横向向右平移对齐</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QPushButton" name="btnMoveFront">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>▼ 往前走 (减小间距 Y-)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>发射与接收线圈减小间距</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QPushButton" name="btnMoveUp">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>⏫ 上升 (Z+)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QPushButton" name="btnMotorUnlock">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>🔓 解锁报警 ($X)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="2">
+                 <widget class="QPushButton" name="btnMoveDown">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>32</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>⏬ 下降 (Z-)</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxAuxLine">
+                <property name="spacing">
+                 <number>8</number>
+                </property>
+                <item>
+                 <widget class="QCheckBox" name="chkInvertX">
+                  <property name="text">
+                   <string>反转X轴(左右)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="chkInvertY">
+                  <property name="text">
+                   <string>反转Y轴(前后)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacerAuxLine">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnQueryStatus">
+                  <property name="text">
+                   <string>🔄 实时查询状态 (?)</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="spacerLeftColBottom">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="layoutManualColRight">
+           <property name="spacing">
+            <number>8</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupManualFpga">
+             <property name="title">
+              <string>⚡ FPGA 高频信号发生器调试</string>
+             </property>
+             <layout class="QVBoxLayout" name="layoutManualFpga">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="gridFpgaParams">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="lblManualFreq">
+                  <property name="text">
+                   <string>频率(Hz):</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="manualFreqEdit">
+                  <property name="text">
+                   <string>85000</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="lblManualDead">
+                  <property name="text">
+                   <string>死区(%):</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLineEdit" name="manualDeadbandEdit">
+                  <property name="text">
+                   <string>5</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="4">
+                 <widget class="QLabel" name="lblManualPhase">
+                  <property name="text">
+                   <string>相位差(°):</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="5">
+                 <widget class="QLineEdit" name="manualPhaseDiffEdit">
+                  <property name="text">
+                   <string>90</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="lblManualAngles">
+                  <property name="text">
+                   <string>ABCD角(°):</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="manualAngleAEdit">
+                  <property name="text">
+                   <string>90</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>A角</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLineEdit" name="manualAngleBEdit">
+                  <property name="text">
+                   <string>90</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>B角</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QLineEdit" name="manualAngleCEdit">
+                  <property name="text">
+                   <string>90</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>C角</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="4" colspan="2">
+                 <widget class="QLineEdit" name="manualAngleDEdit">
+                  <property name="text">
+                   <string>90</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>D角</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxFpgaBtns">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="manualSendSignal_bt">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>28</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>⚡ 发送自定义信号</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="initFpgaSignal_bt">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>28</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>⚡ 65kHz 标准初始化 (65k/5%/90°)</string>
+                  </property>
+                  <property name="toolTip">
+                   <string>快速下发初始化信号: 频率 65000Hz, 死区 5%, 相位差 90°</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxFpgaPreviewLine">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="lblFpgaHex">
+                  <property name="text">
+                   <string>16进制报文:</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6B7280; font-size: 11px;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="manualSignalSendComboBox">
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>16进制完整报文预览与发送历史记录</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupManualLoad">
+             <property name="title">
+              <string>🔋 可编程电子负载仪控制</string>
+             </property>
+             <layout class="QVBoxLayout" name="layoutManualLoad">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="gridLoadParams">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="lblLoadMode">
+                  <property name="text">
+                   <string>工作模式:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QComboBox" name="manualLoadModeComboBox">
+                  <item>
+                   <property name="text">
+                    <string>CR (定电阻模式)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>CC (定电流模式)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>CV (定电压模式)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>CP (定功率模式)</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="lblLoadVal">
+                  <property name="text">
+                   <string>设定数值:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLineEdit" name="manualLoadValueEdit">
+                  <property name="text">
+                   <string>50.000</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>阻值(Ω)/数值</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="4">
+                 <widget class="QPushButton" name="manualSendLoad_bt">
+                  <property name="minimumSize">
+                   <size>
+                    <width>90</width>
+                    <height>28</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>发送指令</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxLoadPreviewLine">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="lblLoadHex">
+                  <property name="text">
+                   <string>SCPI 指令:</string>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: #6B7280; font-size: 11px;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="manualLoadSendComboBox">
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="toolTip">
+                   <string>SCPI 负载指令预览与历史记录</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupManualLog">
+             <property name="title">
+              <string>📋 手动调试与回显控制台</string>
+             </property>
+             <layout class="QVBoxLayout" name="layoutManualLog">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <item>
+               <widget class="QTextBrowser" name="manualLogText">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>120</height>
+                 </size>
+                </property>
+                <property name="placeholderText">
+                 <string>手动调试日志与设备实时回显...</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="boxManualLogBar">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="btnClearManualLog">
+                  <property name="text">
+                   <string>清空调试日志</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacerManualLog">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnBackToAuto">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>📊 返回自动化测试与波形界面 &gt;&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+</item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">

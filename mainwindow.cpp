@@ -220,6 +220,18 @@ mainwindow::mainwindow(QWidget *parent)
     connect(ui->btnStep10, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(10.0); });
     connect(ui->btnStep20, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(20.0); });
 
+    // 手动调试界面返回自动化主页面与清空日志
+    connect(ui->btnBackToAuto, &QPushButton::clicked, this, [this]() {
+        if (ui && ui->mainTabWidget && ui->tabAutoMain) {
+            ui->mainTabWidget->setCurrentWidget(ui->tabAutoMain);
+        }
+    });
+    connect(ui->btnClearManualLog, &QPushButton::clicked, this, [this]() {
+        if (ui && ui->manualLogText) {
+            ui->manualLogText->clear();
+        }
+    });
+
     // 初始化相对坐标显示为对齐2cm默认零点
     updateRelativeDisplay();
 
@@ -658,9 +670,9 @@ void mainwindow::on_creatData_bt_clicked()
 
 void mainwindow::on_manual_bt_clicked()
 {
-    // 一键切换到内置的手动调试面板选项卡（无需弹出窗口，完全整合到主界面）
-    if (ui && ui->modeTabs && ui->tabManualDebug) {
-        ui->modeTabs->setCurrentWidget(ui->tabManualDebug);
+    // 一键切换到中央手动调试与线圈对齐面板（无需弹出子窗口，完全整合到主界面）
+    if (ui && ui->mainTabWidget && ui->tabManualMain) {
+        ui->mainTabWidget->setCurrentWidget(ui->tabManualMain);
     }
 }
 
@@ -738,9 +750,7 @@ void mainwindow::on_manualSendSignal_bt_clicked()
     if (ui->statusBar) {
         ui->statusBar->showMessage(QString("⚡ FPGA 信号发送成功 (%1Hz, 死区%2%, 相位%3°)").arg(freq).arg(dead).arg(phase), 4000);
     }
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 实时更新电子负载仪 SCPI 指令预览
@@ -801,9 +811,7 @@ void mainwindow::on_manualSendLoad_bt_clicked()
     if (ui->statusBar) {
         ui->statusBar->showMessage(QString("🔋 负载指令已发送: %1").arg(trimmedCmd), 4000);
     }
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 快捷初始化 FPGA 信号 (65000Hz, 死区5%, 相位差90°)
@@ -836,10 +844,7 @@ void mainwindow::on_initFpgaSignal_bt_clicked()
     if (ui->statusBar) {
         ui->statusBar->showMessage("⚡ FPGA 初始化信号已发送 (65000Hz, 死区5%, 相位差90°)", 5000);
     }
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2")
-            .arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 
     QMessageBox::information(this, "信号初始化成功",
         "⚡ FPGA 信号初始化已完成并成功发送！\n\n"
@@ -872,7 +877,16 @@ void mainwindow::on_param_Loading_bt_clicked()
 // 接收运动控制器数据
 void mainwindow::receive_retext(QByteArray re_data)
 {
-    ui->reText->append(re_data);
+    if (ui && ui->reText) ui->reText->append(re_data);
+    if (ui && ui->manualLogText) ui->manualLogText->append(re_data);
+}
+
+// 同步输出格式化日志到主控制台与手动调试控制台
+void mainwindow::appendLog(const QString &msg)
+{
+    QString line = QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), msg);
+    if (ui && ui->reText) ui->reText->append(line);
+    if (ui && ui->manualLogText) ui->manualLogText->append(line);
 }
 
 // 显示数据采集进度条
@@ -928,9 +942,7 @@ void mainwindow::on_btnSetRelZero_clicked()
                         .arg(refX_, 0, 'f', 2).arg(refY_, 0, 'f', 2).arg(refZ_, 0, 'f', 2);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage("🎯 当前位置已设定为相对坐标零点 (0, 0, 0)", 3500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 回到对齐2cm初始位
@@ -952,9 +964,7 @@ void mainwindow::on_btnGotoInitPos_clicked()
     QString logMsg = QString("[初始位置] 正在返回线圈对齐2cm初始位 (X=207, Y=273, Z=301, 速度=%1 mm/min)").arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage("🏠 正在回初始位 (线圈对齐2cm)...", 4000);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 往后走 (增大间距, Y+)
@@ -975,9 +985,7 @@ void mainwindow::on_btnMoveBack_clicked()
                         .arg(step, 0, 'f', 1).arg(dy, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("▲ 电机往后位移 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 往前走 (缩小间距, Y-)
@@ -998,9 +1006,7 @@ void mainwindow::on_btnMoveFront_clicked()
                         .arg(step, 0, 'f', 1).arg(dy, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("▼ 电机往前位移 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 往左走 (X+)
@@ -1021,9 +1027,7 @@ void mainwindow::on_btnMoveLeft_clicked()
                         .arg(step, 0, 'f', 1).arg(dx, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("◀ 电机往左平移 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 往右走 (X-)
@@ -1044,9 +1048,7 @@ void mainwindow::on_btnMoveRight_clicked()
                         .arg(step, 0, 'f', 1).arg(dx, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("▶ 电机往右平移 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 上升 (Z+)
@@ -1064,9 +1066,7 @@ void mainwindow::on_btnMoveUp_clicked()
     QString logMsg = QString("[电机控制] 上升: 单步 %1 mm (速度 %2 mm/min)").arg(step, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("▲ 电机上升 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 下降 (Z-)
@@ -1084,9 +1084,7 @@ void mainwindow::on_btnMoveDown_clicked()
     QString logMsg = QString("[电机控制] 下降: 单步 %1 mm (速度 %2 mm/min)").arg(step, 0, 'f', 1).arg(speed);
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage(QString("▼ 电机下降 %1 mm").arg(step, 0, 'f', 1), 2500);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 紧急停止
@@ -1098,9 +1096,7 @@ void mainwindow::on_btnMotorStop_clicked()
     QString logMsg = "[电机急停] 已发送急停控制指令 (!)";
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage("🛑 电机已紧急刹停 (!)", 4000);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 解锁警报
@@ -1112,9 +1108,7 @@ void mainwindow::on_btnMotorUnlock_clicked()
     QString logMsg = "[电机解锁] 已发送解除锁定报警指令 ($X)";
     qDebug().noquote() << logMsg;
     if (ui->statusBar) ui->statusBar->showMessage("🔓 电机已解锁报警 ($X)", 4000);
-    if (ui->reText) {
-        ui->reText->append(QString("[%1] %2").arg(QDateTime::currentDateTime().toString("HH:mm:ss"), logMsg));
-    }
+    appendLog(logMsg);
 }
 
 // 查询状态
