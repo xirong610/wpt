@@ -8,8 +8,8 @@ echo =======================================================
 echo   WPT 2.0 - 推送更新至 GitHub (xirong610/wpt)
 echo =======================================================
 echo.
-echo 正在推送到 main 分支...
-git push origin main
+echo 正在推送到 main 分支并同步 Release 标签...
+git -c http.proxy="" -c https.proxy="" push origin main --tags
 echo.
 if %errorlevel% equ 0 (
     echo [成功] 代码已成功推送到 GitHub 远程仓库！
