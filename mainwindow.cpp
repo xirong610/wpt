@@ -209,16 +209,16 @@ mainwindow::mainwindow(QWidget *parent)
     connect(ui->btnMotorUnlock, &QPushButton::clicked, this, &mainwindow::on_btnMotorUnlock_clicked);
     connect(ui->btnQueryStatus, &QPushButton::clicked, this, &mainwindow::on_btnQueryStatus_clicked);
 
-    connect(ui->btnSpeedSlow, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(300); });
-    connect(ui->btnSpeedStd, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(1000); });
-    connect(ui->btnSpeedFast, &QPushButton::clicked, this, [this]() { on_btnSpeedPreset_clicked(2500); });
+    connect(ui->btnSpeedSlow, &QPushButton::clicked, this, [this]() { setSpeedPreset(300); });
+    connect(ui->btnSpeedStd,  &QPushButton::clicked, this, [this]() { setSpeedPreset(1000); });
+    connect(ui->btnSpeedFast, &QPushButton::clicked, this, [this]() { setSpeedPreset(2500); });
 
-    connect(ui->btnStep05, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(0.5); });
-    connect(ui->btnStep1, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(1.0); });
-    connect(ui->btnStep2, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(2.0); });
-    connect(ui->btnStep5, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(5.0); });
-    connect(ui->btnStep10, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(10.0); });
-    connect(ui->btnStep20, &QPushButton::clicked, this, [this]() { on_btnStepPreset_clicked(20.0); });
+    connect(ui->btnStep05, &QPushButton::clicked, this, [this]() { setStepPreset(0.5); });
+    connect(ui->btnStep1,  &QPushButton::clicked, this, [this]() { setStepPreset(1.0); });
+    connect(ui->btnStep2,  &QPushButton::clicked, this, [this]() { setStepPreset(2.0); });
+    connect(ui->btnStep5,  &QPushButton::clicked, this, [this]() { setStepPreset(5.0); });
+    connect(ui->btnStep10, &QPushButton::clicked, this, [this]() { setStepPreset(10.0); });
+    connect(ui->btnStep20, &QPushButton::clicked, this, [this]() { setStepPreset(20.0); });
 
     // 手动调试界面返回自动化主页面与清空日志
     connect(ui->btnBackToAuto, &QPushButton::clicked, this, [this]() {
@@ -330,12 +330,6 @@ mainwindow::mainwindow(QWidget *parent)
             ui->openbt2->setText("打开");
         }
     });
-
-    //手动
-    // connect(ui->manual_bt, &QPushButton::clicked, this, [=](){
-
-    //     // qDebug() << "Date:";
-    // });
 
     // 回零位置
     connect(ui->home_bt, &QPushButton::clicked, this, [=](){
@@ -855,15 +849,6 @@ void mainwindow::on_initFpgaSignal_bt_clicked()
         "• 报文帧: " + hexStr);
 }
 
-
-/******添加PID控制器子窗口*****/
-// 该部分代码用于打开PID控制器的子窗口，但目前被注释掉
-// void mainwindow::on_PID_bt_clicked()
-// {
-//     alg_pid* PIDWidget = new alg_pid();
-//     PIDWidget->show();
-// }
-
 // 加载参数并获取数据行数
 void mainwindow::on_param_Loading_bt_clicked()
 {
@@ -1122,13 +1107,13 @@ void mainwindow::on_btnQueryStatus_clicked()
 }
 
 // 速度预设
-void mainwindow::on_btnSpeedPreset_clicked(int speed)
+void mainwindow::setSpeedPreset(int speed)
 {
     ui->spinMotorSpeed->setValue(speed);
 }
 
 // 步长预设
-void mainwindow::on_btnStepPreset_clicked(double step)
+void mainwindow::setStepPreset(double step)
 {
     ui->spinMotorStep->setValue(step);
 }
