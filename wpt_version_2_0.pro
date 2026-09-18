@@ -3,6 +3,7 @@ greaterThan(QT_MAJOR_VERSION, 5): QT += widgets
 
 CONFIG += c++11 console
 
+TARGET = wpt_version_2_0
 RC_ICONS = app.ico
 
 DEFINES += QT_DEPRECATED_WARNINGS

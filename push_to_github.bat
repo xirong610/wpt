@@ -1,19 +1,21 @@
 @echo off
-title Push WPT 2.0 to GitHub
+chcp 65001 >nul
+title WPT 2.0 推送代码至 GitHub
 cd /d "%~dp0"
+set "PATH=C:\Program Files\Git\cmd;%PATH%"
+
 echo =======================================================
-echo   WPT 2.0 - Push Baseline to GitHub (xirong610/wpt)
+echo   WPT 2.0 - 推送更新至 GitHub (xirong610/wpt)
 echo =======================================================
 echo.
-echo Pushing main branch and v2.0-baseline tag...
-git push -u origin main --tags
+echo 正在推送到 main 分支...
+git push origin main
 echo.
 if %errorlevel% equ 0 (
-    echo [SUCCESS] Push completed successfully!
-    echo Visit: https://github.com/xirong610/wpt
+    echo [成功] 代码已成功推送到 GitHub 远程仓库！
+    echo 仓库地址: https://github.com/xirong610/wpt
 ) else (
-    echo [NOTE] If this is your first time pushing, a browser window
-    echo will pop up for you to authorize GitHub login.
+    echo [提示] 推送遇到问题，请检查网络连接或 GitHub 授权认证。
 )
 echo.
 pause

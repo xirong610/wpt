@@ -84,7 +84,7 @@ wpt_version_2_0/
 │   └── pic.qrc                  # Qt 资源文件
 │
 ├── release/                     # 编译输出目录
-│   ├── wpt_version_1_8.exe      # 可执行文件
+│   ├── wpt_version_2_0.exe      # 可执行文件
 │   ├── Qt5*.dll                 # Qt 运行时库
 │   ├── platforms/               # Qt 平台插件
 │   ├── imageformats/            # 图片格式插件
@@ -104,8 +104,8 @@ wpt_version_2_0/
 ├── dataview.cpp / .h            # 数据显示模块
 ├── gatherdata.cpp / .h          # 数据采集线程
 ├── writedata.cpp / .h           # 数据加载与发送线程
-├── wpt_version_1_8.pro          # qmake 项目文件
-└── wpt_version_1_8.pro.user     # Qt Creator 用户配置
+├── wpt_version_2_0.pro          # qmake 项目文件
+└── wpt_version_2_0.pro.user     # Qt Creator 用户配置
 ```
 
 ---
@@ -327,5 +327,5 @@ wpt_version_2_0/
 | 主界面一键初始化信号 (65kHz) | mainwindow, serial_fpga | ✅ 已新增 | 一键发送 65000Hz, 死区5%, 相位差90° 信号，无需每次打开手动调试页面 |
 | 手动调试与主界面串口合并 | debug.cpp, mainwindow.cpp | ✅ 已重构 | 手动调试注入共享串口，复用已打开实例，彻底消除“串口已被占用” |
 | 手动调试负载仪发送逻辑对齐 | debug.cpp, writedata.cpp | ✅ 已对齐 | 统一基于共享持久连接发送 `RESI1:CR <val>\n`，自动数值封装，修复历史记录过滤 |
-| 编译与可执行文件验证 | release/wpt_version_1_8.exe | ✅ 通过 | 零警告零报错，测试运行成功 |
+| 编译与可执行文件验证 | release/wpt_version_2_0.exe | ✅ 通过 | 零警告零报错，测试运行成功 |
 
