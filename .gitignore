@@ -46,6 +46,10 @@ build_log.txt
 Thumbs.db
 [Dd]esktop.ini
 
+# Packaging & Distribution
+dist/
+*.zip
+
 # Keep third-party precompiled libraries (explicitly include USBDAQ DLL & Libs)
 !3rdparty/
 !3rdparty/**
